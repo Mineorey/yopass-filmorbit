@@ -7,7 +7,7 @@ import (
 
 // DefaultThemeLight and DefaultThemeDark are the DaisyUI themes used
 // when no valid license overrides them (FilmOrbit fork: its own light-only
-// "filmorbit" theme from website/src/shared/styles/index.css for both modes).
+// "filmorbit" theme from website/src/shared/styles/filmorbit.css for both modes).
 // cmd/yopass-server uses them as the
 // defaults for the --theme-light and --theme-dark flags.
 const (
