@@ -294,5 +294,22 @@
     "language": "Sprache",
     "theme": "Design",
     "darkModeToggle": "Dunkler Modus"
+  },
+  "filmorbit": {
+    "modeSwitchLabel": "Was möchtest du senden?",
+    "modeText": "Text",
+    "modeFile": "Datei",
+    "modeHint": "Text: Passwörter, API-Schlüssel, Zugangsdaten · Datei: z. B. Schlüsseldatei oder Zertifikat (max. {{size}})",
+    "modeHintNoSize": "Text: Passwörter, API-Schlüssel, Zugangsdaten · Datei: z. B. Schlüsseldatei oder Zertifikat",
+    "introText": "Trage hier die Zugangsdaten ein, die du uns schicken möchtest. Sie werden in deinem Browser verschlüsselt, bevor sie gesendet werden.",
+    "introFile": "Wähle die Datei aus, die du uns schicken möchtest, z. B. eine Schlüsseldatei oder ein Zertifikat. Sie wird in deinem Browser verschlüsselt, bevor sie hochgeladen wird.",
+    "helpExpiration": "Danach funktioniert der Link nicht mehr – auch wenn ihn noch niemand geöffnet hat.",
+    "helpOneTime": "An: Das Geheimnis wird nach dem ersten Öffnen sofort gelöscht. Aus: Es lässt sich bis zum Ablauf mehrmals öffnen.",
+    "helpGenerateKey": "An (am einfachsten): Der Schlüssel wird automatisch erzeugt und steckt im Link – du schickst nur einen Link. Aus: Du legst ein eigenes Passwort fest und schickst es getrennt vom Link über einen anderen Weg (z. B. Link per E-Mail, Passwort per Telefon oder SMS). Sicherer, aber mehr Aufwand.",
+    "helpCustomPassword": "Wir brauchen dieses Passwort zum Öffnen. Schick es nicht zusammen mit dem Link, sondern über einen anderen Weg, z. B. per Telefon oder SMS.",
+    "nextTitle": "Und jetzt?",
+    "nextOneClick": "Schick uns den Ein-Klick-Link, z. B. per E-Mail. Mehr ist nicht nötig – der Schlüssel steckt schon im Link.",
+    "nextSeparate": "Schick uns den Kurzlink und den Entschlüsselungsschlüssel getrennt über zwei verschiedene Wege, z. B. den Link per E-Mail und den Schlüssel per Telefon oder SMS.",
+    "nextCustomPassword": "Schick uns den Kurzlink, z. B. per E-Mail. Dein Passwort teilst du uns getrennt über einen anderen Weg mit, z. B. per Telefon oder SMS."
   }
 }

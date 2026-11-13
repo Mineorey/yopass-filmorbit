@@ -79,3 +79,9 @@ it('keeps existing requests accessible while an expired license drains', async (
   await render();
   expect(container.querySelector('a[href="#/requests"]')).not.toBeNull();
 });
+
+it('has no upload link (the text/file switch sits above the card)', async () => {
+  await render();
+  expect(container.querySelector('a[href="#/upload"]')).toBeNull();
+  expect(container.textContent).not.toContain('header.buttonUpload');
+});

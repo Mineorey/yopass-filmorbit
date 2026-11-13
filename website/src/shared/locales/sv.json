@@ -294,5 +294,22 @@
     "language": "Språk",
     "theme": "Tema",
     "darkModeToggle": "Mörkt läge"
+  },
+  "filmorbit": {
+    "modeSwitchLabel": "What do you want to send?",
+    "modeText": "Text",
+    "modeFile": "File",
+    "modeHint": "Text: passwords, API keys, credentials · File: e.g. a key file or certificate (max. {{size}})",
+    "modeHintNoSize": "Text: passwords, API keys, credentials · File: e.g. a key file or certificate",
+    "introText": "Enter the credentials you want to send us. They are encrypted in your browser before they are sent.",
+    "introFile": "Choose the file you want to send us, e.g. a key file or certificate. It is encrypted in your browser before it is uploaded.",
+    "helpExpiration": "After this time the link stops working, even if nobody has opened it yet.",
+    "helpOneTime": "On: the secret is deleted right after it is first opened. Off: it can be opened several times until it expires.",
+    "helpGenerateKey": "On (simplest): the key is generated automatically and is part of the link, so you only send one link. Off: you set your own password and send it separately from the link through another channel (e.g. link by email, password by phone or SMS). More secure, but more effort.",
+    "helpCustomPassword": "We need this password to open the secret. Do not send it together with the link; use another channel, e.g. phone or SMS.",
+    "nextTitle": "What now?",
+    "nextOneClick": "Send us the one-click link, e.g. by email. That is all: the key is already part of the link.",
+    "nextSeparate": "Send us the short link and the decryption key separately through two different channels, e.g. the link by email and the key by phone or SMS.",
+    "nextCustomPassword": "Send us the short link, e.g. by email. Tell us your password separately through another channel, e.g. by phone or SMS."
   }
 }

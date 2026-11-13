@@ -10,6 +10,7 @@ import StreamingUpload from '@features/StreamingUpload';
 import ReadOnlyLanding from '@features/ReadOnlyLanding';
 import LoginRequired from '@features/LoginRequired';
 import AccessGate from '@features/AccessGate';
+import ModeSwitch, { ModeSwitchContext } from '@features/ModeSwitch';
 import { useAccess } from '@shared/hooks/useAccess';
 import { SpinnerIcon } from '@shared/components/icons';
 import FilmOrbitFooter from '@shared/components/FilmOrbitFooter';
@@ -37,6 +38,9 @@ export default function App() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const access = useAccess();
   const { t } = useTranslation();
+
+  // Number of mounted create forms asking for the text/file mode switch.
+  const [modeSwitchUsers, setModeSwitchUsers] = useState(0);
 
   // The route can unmount while a one-time fetch is pending. Keep every
   // collected answer here until explicitly closed, without persisting content.
@@ -126,92 +130,95 @@ export default function App() {
           tabIndex={-1}
           className="fo-container mb-auto py-12 sm:py-16 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
+          {modeSwitchUsers > 0 && <ModeSwitch />}
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body p-6 sm:p-10">
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      {loginAlert}
-                      {READ_ONLY ? (
-                        <ReadOnlyLanding />
-                      ) : needsLogin ? (
-                        <LoginRequired />
-                      ) : accessPending ? (
-                        accessSpinner
-                      ) : needsAccess ? (
-                        <AccessGate />
-                      ) : (
-                        <CreateSecret />
-                      )}
-                    </>
-                  }
-                />
-                {READ_ONLY ? (
-                  <Route path="/upload" element={<ReadOnlyLanding />} />
-                ) : needsLogin ? (
-                  <Route path="/upload" element={<LoginRequired />} />
-                ) : (
-                  !DISABLE_UPLOAD && (
-                    <Route
-                      path="/upload"
-                      element={
-                        accessPending ? (
+              <ModeSwitchContext.Provider value={setModeSwitchUsers}>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        {loginAlert}
+                        {READ_ONLY ? (
+                          <ReadOnlyLanding />
+                        ) : needsLogin ? (
+                          <LoginRequired />
+                        ) : accessPending ? (
                           accessSpinner
                         ) : needsAccess ? (
                           <AccessGate />
                         ) : (
-                          <StreamingUpload />
-                        )
-                      }
-                    />
-                  )
-                )}
-                {(SECRET_REQUESTS || SECRET_REQUESTS_DRAINING) && (
-                  <>
-                    {/* An expired license blocks new requests; a link to the
-                        form shows the list and its notice instead. */}
-                    <Route
-                      path="/request"
-                      element={
-                        needsLoginAll || (SECRET_REQUESTS && needsLogin) ? (
-                          <LoginRequired />
-                        ) : !SECRET_REQUESTS ? (
-                          <RequestList onReveal={reveal} />
-                        ) : (
-                          <CreateRequest />
-                        )
-                      }
-                    />
-                    <Route
-                      path="/requests"
-                      element={
-                        needsLoginAll ? (
-                          <LoginRequired />
-                        ) : (
-                          <RequestList onReveal={reveal} />
-                        )
-                      }
-                    />
-                    <Route path="/r/:key" element={<ProvideSecret />} />
-                    <Route path="/r/:key/:fp" element={<ProvideSecret />} />
-                  </>
-                )}
-                {READ_RECEIPTS && (
-                  <Route
-                    path="/receipts"
-                    element={
-                      needsLoginAll ? <LoginRequired /> : <ReceiptList />
+                          <CreateSecret />
+                        )}
+                      </>
                     }
                   />
-                )}
-                <Route
-                  path="/:format/:key/:password"
-                  element={<Prefetcher />}
-                />
-                <Route path="/:format/:key" element={<Prefetcher />} />
-              </Routes>
+                  {READ_ONLY ? (
+                    <Route path="/upload" element={<ReadOnlyLanding />} />
+                  ) : needsLogin ? (
+                    <Route path="/upload" element={<LoginRequired />} />
+                  ) : (
+                    !DISABLE_UPLOAD && (
+                      <Route
+                        path="/upload"
+                        element={
+                          accessPending ? (
+                            accessSpinner
+                          ) : needsAccess ? (
+                            <AccessGate />
+                          ) : (
+                            <StreamingUpload />
+                          )
+                        }
+                      />
+                    )
+                  )}
+                  {(SECRET_REQUESTS || SECRET_REQUESTS_DRAINING) && (
+                    <>
+                      {/* An expired license blocks new requests; a link to the
+                        form shows the list and its notice instead. */}
+                      <Route
+                        path="/request"
+                        element={
+                          needsLoginAll || (SECRET_REQUESTS && needsLogin) ? (
+                            <LoginRequired />
+                          ) : !SECRET_REQUESTS ? (
+                            <RequestList onReveal={reveal} />
+                          ) : (
+                            <CreateRequest />
+                          )
+                        }
+                      />
+                      <Route
+                        path="/requests"
+                        element={
+                          needsLoginAll ? (
+                            <LoginRequired />
+                          ) : (
+                            <RequestList onReveal={reveal} />
+                          )
+                        }
+                      />
+                      <Route path="/r/:key" element={<ProvideSecret />} />
+                      <Route path="/r/:key/:fp" element={<ProvideSecret />} />
+                    </>
+                  )}
+                  {READ_RECEIPTS && (
+                    <Route
+                      path="/receipts"
+                      element={
+                        needsLoginAll ? <LoginRequired /> : <ReceiptList />
+                      }
+                    />
+                  )}
+                  <Route
+                    path="/:format/:key/:password"
+                    element={<Prefetcher />}
+                  />
+                  <Route path="/:format/:key" element={<Prefetcher />} />
+                </Routes>
+              </ModeSwitchContext.Provider>
             </div>
           </div>
           <FeaturesSection />

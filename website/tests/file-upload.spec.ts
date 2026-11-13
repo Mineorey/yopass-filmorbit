@@ -339,7 +339,10 @@ test.describe('File Upload', () => {
     // Navigate to a clean upload page for the second test
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.click('a[href="#/upload"]');
+    await page
+      .getByRole('radiogroup', { name: 'Was möchtest du senden?' })
+      .locator('label', { hasText: 'Datei' })
+      .click();
 
     // Wait for upload page to load
     await expect(page.locator('h2:has-text("Datei hochladen")')).toBeVisible({

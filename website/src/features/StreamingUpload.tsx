@@ -14,6 +14,7 @@ import {
 import { useConfig } from '@shared/hooks/useConfig';
 import { useSecretForm } from '@shared/hooks/useSecretForm';
 import { SecretOptions } from '@shared/components/SecretOptions';
+import { ShowModeSwitch } from '@features/ModeSwitch';
 import Result from '@features/display-secret/Result';
 import { safeFilename } from '@shared/lib/safeFilename';
 
@@ -223,9 +224,11 @@ export default function StreamingUpload() {
 
   return (
     <>
+      <ShowModeSwitch />
       <h2 className="text-3xl font-medium tracking-tight mb-4">
         {t('upload.title')}
       </h2>
+      <p className="mb-4 text-base-content/70">{t('filmorbit.introFile')}</p>
 
       {error && (
         <div

@@ -12,8 +12,6 @@ import { REQUESTS_CHANGED_EVENT } from '../lib/requestStore';
 
 export default function Navbar() {
   const {
-    DISABLE_UPLOAD,
-    READ_ONLY,
     OIDC_ENABLED,
     SECRET_REQUESTS,
     SECRET_REQUESTS_DRAINING,
@@ -77,59 +75,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center min-w-0">{logo}</div>
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {!READ_ONLY &&
-              (!DISABLE_UPLOAD && location.pathname === '/upload' ? (
-                <a
-                  className="flex items-center gap-2 px-2 sm:px-3 py-2 text-sm font-medium text-base-content/70 hover:text-base-content hover:bg-base-200 rounded-field transition-all duration-200"
-                  href="#/"
-                  title={t('header.buttonText')}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-                    />
-                  </svg>
-                  <span className="hidden sm:inline">
-                    {t('header.buttonText')}
-                  </span>
-                </a>
-              ) : (
-                !DISABLE_UPLOAD && (
-                  <a
-                    className="flex items-center gap-2 px-2 sm:px-3 py-2 text-sm font-medium text-base-content/70 hover:text-base-content hover:bg-base-200 rounded-field transition-all duration-200"
-                    href="#/upload"
-                    title={t('header.buttonUpload')}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-                      />
-                    </svg>
-                    <span className="hidden sm:inline">
-                      {t('header.buttonUpload')}
-                    </span>
-                  </a>
-                )
-              ))}
-
+            {/* FilmOrbit Safe: the text/upload switch lives above the
+                create card (features/ModeSwitch.tsx). */}
             {(SECRET_REQUESTS || SECRET_REQUESTS_DRAINING) && (
               <a
                 className={`flex items-center gap-2 px-2 sm:px-3 py-2 text-sm font-medium rounded-field transition-all duration-200 ${

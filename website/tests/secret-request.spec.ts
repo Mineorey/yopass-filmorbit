@@ -528,7 +528,7 @@ test.describe('Secret Requests', () => {
       page.getByText('Zugangsdaten sicher an FilmOrbit schicken'),
     ).toBeVisible();
     // Present elsewhere, so the absence checks below are meaningful.
-    for (const href of ['#/requests', '#/upload', '#/receipts']) {
+    for (const href of ['#/requests', '#/receipts']) {
       await expect(page.locator(`header a[href="${href}"]`)).toBeVisible();
     }
     await expect(page.locator('header a[href$="/auth/login"]')).toBeVisible();

@@ -107,8 +107,9 @@ test.describe('Read-Only Mode', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // Upload button in navbar should not be visible
+    // Neither the upload link nor the text/file mode switch is visible
     await expect(page.locator('a[href="#/upload"]')).not.toBeVisible();
+    await expect(page.getByRole('radiogroup')).toHaveCount(0);
 
     // Read-only landing should be visible on homepage
     await expect(
@@ -145,8 +146,10 @@ test.describe('Read-Only Mode', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // Upload button should be visible
-    await expect(page.locator('a[href="#/upload"]')).toBeVisible();
+    // The text/file mode switch should be visible
+    await expect(
+      page.getByRole('radiogroup', { name: 'Was möchtest du senden?' }),
+    ).toBeVisible();
   });
 
   test('should show features section in normal mode when DISABLE_FEATURES is false', async ({

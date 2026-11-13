@@ -13,6 +13,7 @@ import { useConfig } from '@shared/hooks/useConfig';
 import { useSecretForm } from '@shared/hooks/useSecretForm';
 import { SecretOptions } from '@shared/components/SecretOptions';
 import Result from '@features/display-secret/Result';
+import { ShowModeSwitch } from '@features/ModeSwitch';
 
 export default function CreateSecret() {
   const { t } = useTranslation();
@@ -143,9 +144,11 @@ export default function CreateSecret() {
 
   return (
     <>
+      <ShowModeSwitch />
       <h2 className="text-3xl font-medium tracking-tight mb-4">
         {t('create.title')}
       </h2>
+      <p className="mb-4 text-base-content/70">{t('filmorbit.introText')}</p>
       <form
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={event => {
