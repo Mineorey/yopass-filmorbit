@@ -24,3 +24,22 @@ describe('fixed German language', () => {
     expect(i18n.resolvedLanguage).toBe('de');
   });
 });
+
+describe('plural forms', () => {
+  it.each([
+    ['de', 1, '1 Geheimnis wartet auf Abholung'],
+    ['de', 2, '2 Geheimnisse warten auf Abholung'],
+    ['en', 1, '1 secret waiting to be collected'],
+    ['en', 2, '2 secrets waiting to be collected'],
+    ['ru', 1, '1 секрет ожидает получения'],
+    ['ru', 2, '2 секрета ожидают получения'],
+    ['ru', 5, '5 секретов ожидают получения'],
+    ['ru', 21, '21 секрет ожидает получения'],
+    ['he', 2, 'שני סודות ממתינים לאיסוף'],
+  ])('%s renders count %i', async (language, count, expected) => {
+    const { default: i18n } = await import('./i18n');
+    expect(i18n.t('header.requestsWithCount', { lng: language, count })).toBe(
+      expected,
+    );
+  });
+});
