@@ -80,7 +80,7 @@ Quelle: Design-Variablen von neu.filmorbit.de.
 - Farben: Primär Blau `#49ADC3` (Hover `#317382`), Akzent Pink `#b03350`, Lila `#28183b`, Text `#1C2426`/`#050D0F`, Hintergrund `#F8F8F8`, Karten `#FFFFFF`, Rahmen `#E2E3E3`.
 - Umsetzung als eigenes DaisyUI-Theme `filmorbit` im CSS des Forks und als Standard gesetzt (nicht über die lizenzpflichtigen Theme-Flags).
 - Nur helles Theme; Theme-Umschalter ausgeblendet.
-- Logo: FilmOrbit-Logo (von der Website) in der Navbar statt Yopass-Logo; Favicon/Touch-Icon ersetzen. App-Name „FilmOrbit Tresor“ im Tab-Titel.
+- Logo: FilmOrbit-Logo (von der Website) in der Navbar statt Yopass-Logo; Favicon/Touch-Icon ersetzen. App-Name „FilmOrbit Safe“ im Tab-Titel.
 - Navbar/Footer: Link zurück zu filmorbit.de, Impressum und Datenschutz (über vorhandene `--imprint-url`/`--privacy-notice-url`, die ohne Lizenz funktionieren).
 - Hinweise auf „Yopass“ im UI entfernen; im Footer dezent „basiert auf Yopass (Open Source)“ als Lizenz-Hinweis.
 
@@ -99,9 +99,9 @@ Quelle: Design-Variablen von neu.filmorbit.de.
 
 Zielserver (Angaben Niklas): Linux-Server mit **Caddy** als vorhandenem Reverse Proxy; daneben laufen bereits Instatic CMS, n8n und DocuSeal. Das Tool läuft als **eigene, getrennte Instanz** daneben.
 
-- **Domain:** `tresor.filmorbit.de` (Vorschlag, Freigabe durch Niklas offen). App-Name passend: „FilmOrbit Tresor“.
+- **Domain:** `safe.filmorbit.de` (Entscheidung Niklas). App-Name passend: „FilmOrbit Safe“.
 - **Container:** eigenes `docker-compose.yml` im Fork (z. B. `deploy/filmorbit/`) mit `yopass` + `memcached` in einem eigenen Docker-Netz. Keine Ports 80/443 belegen; Yopass ist nur für Caddy erreichbar (entweder `127.0.0.1:<port>` auf dem Host oder über das Docker-Netz von Caddy – je nachdem, wie Caddy dort läuft; *Builder prüft das auf dem Server*). Die nginx/Let's-Encrypt-Vorlage aus Upstream wird **nicht** verwendet.
-- **Caddy:** ein Site-Block `tresor.filmorbit.de { reverse_proxy … }`; Caddy kümmert sich um HTTPS. `TRUSTED_PROXIES` auf die Adresse von Caddy setzen (z. B. `127.0.0.1` bzw. das Docker-Subnetz), `PUBLIC_URL=https://tresor.filmorbit.de`.
+- **Caddy:** ein Site-Block `safe.filmorbit.de { reverse_proxy … }`; Caddy kümmert sich um HTTPS. `TRUSTED_PROXIES` auf die Adresse von Caddy setzen (z. B. `127.0.0.1` bzw. das Docker-Subnetz), `PUBLIC_URL=https://safe.filmorbit.de`.
 - **Build & Auslieferung:**
   1. Lokal: Image mit dem vorhandenen `Dockerfile` bauen und per Docker Compose testen.
   2. GitHub: Workflow im Fork baut bei Push auf `main` das Image und veröffentlicht es in der GitHub Container Registry (`ghcr.io/<account>/yopass-filmorbit`). Die Upstream-Workflows unter `.github/workflows`, die Upstream-Images veröffentlichen, werden im Fork deaktiviert bzw. entfernt.
