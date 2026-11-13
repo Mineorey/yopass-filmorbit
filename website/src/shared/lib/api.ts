@@ -324,6 +324,44 @@ export async function uploadStreamingFile(params: {
   );
 }
 
+// --- Shared access password (FilmOrbit) ---
+
+// The access cookie is HttpOnly and scoped to the backend origin, so these
+// calls send credentials same-origin only and leave upstream CORS untouched.
+export async function getAccessStatus(): Promise<boolean> {
+  const { data } = await jsonFetch<{ granted: boolean }>(
+    `${backendDomain}/access`,
+    { method: 'GET', credentials: 'same-origin' },
+    (value): value is { granted: boolean } =>
+      typeof value === 'object' &&
+      value !== null &&
+      typeof (value as Record<string, unknown>).granted === 'boolean',
+  );
+  return data?.granted ?? false;
+}
+
+export type AccessResult = 'ok' | 'invalid' | 'rate_limited';
+
+export async function submitAccessPassword(
+  password: string,
+): Promise<AccessResult> {
+  const { status } = await jsonFetch<null>(`${backendDomain}/access`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
+    credentials: 'same-origin',
+  });
+  if (status === 204) return 'ok';
+  if (status === 429) return 'rate_limited';
+  return 'invalid';
+}
+
+// A creation request was refused because the access cookie is missing or
+// expired, so the access gate must be shown again.
+export function isAccessDenied(status: number, message?: string) {
+  return status === 401 && message === 'access password required';
+}
+
 function errorMessage(value: unknown): string | undefined {
   if (typeof value !== 'object' || value === null) return undefined;
   const message = (value as Record<string, unknown>).message;

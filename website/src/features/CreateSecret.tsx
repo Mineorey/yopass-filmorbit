@@ -34,6 +34,7 @@ export default function CreateSecret() {
     setResult,
     getPassword,
     isCustomPassword,
+    handleAccessDenied,
   } = useSecretForm();
 
   type Secret = {
@@ -97,6 +98,7 @@ export default function CreateSecret() {
         },
         config.OIDC_ENABLED,
       );
+      if (handleAccessDenied(status, message)) return;
       if (status !== 200 || !data) {
         setError('secret', { type: 'submit', message });
       } else {

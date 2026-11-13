@@ -48,6 +48,7 @@ export default function StreamingUpload() {
     setResult,
     getPassword,
     isCustomPassword,
+    handleAccessDenied,
   } = useSecretForm();
 
   const { register, handleSubmit, setValue, control } = useForm<FormValues>({
@@ -176,6 +177,7 @@ export default function StreamingUpload() {
         oidcEnabled: config.OIDC_ENABLED,
       });
 
+      if (handleAccessDenied(status, apiError)) return;
       if (status !== 200 || !res) {
         setError(apiError ?? t('upload.errorFailedToRead'));
         setProgress(null);

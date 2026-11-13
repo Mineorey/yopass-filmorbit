@@ -147,6 +147,14 @@
     "loginRequiredDescription": "Debes iniciar sesión para crear secretos en este servidor.",
     "loginUnavailable": "El inicio de sesión no está disponible porque la licencia del servidor ha caducado. Contacta con tu administrador."
   },
+  "access": {
+    "title": "Access for clients",
+    "description": "This page is for FilmOrbit clients. You will receive the access password from us.",
+    "passwordLabel": "Access password",
+    "submit": "Continue",
+    "invalid": "The password is incorrect. Please try again.",
+    "rateLimited": "Too many attempts. Please wait a few minutes."
+  },
   "accessibility": {
     "skipToContent": "Saltar al contenido principal",
     "dismiss": "Cerrar"

@@ -9,6 +9,8 @@ import Prefetcher from '@features/display-secret/Prefetcher';
 import StreamingUpload from '@features/StreamingUpload';
 import ReadOnlyLanding from '@features/ReadOnlyLanding';
 import LoginRequired from '@features/LoginRequired';
+import AccessGate from '@features/AccessGate';
+import { useAccess } from '@shared/hooks/useAccess';
 import CreateRequest from '@features/request-secret/CreateRequest';
 import RequestList from '@features/request-secret/RequestList';
 import RevealSecretModal, {
@@ -33,6 +35,7 @@ export default function App() {
     READ_RECEIPTS,
   } = useConfig();
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const access = useAccess();
   const { t } = useTranslation();
 
   // The route can unmount while a one-time fetch is pending. Keep every
@@ -60,6 +63,8 @@ export default function App() {
 
   // Whether creation pages must show the login gate instead of their content.
   const needsLogin = REQUIRE_AUTH && !authLoading && !isAuthenticated;
+  // Whether creation pages must show the access password gate instead.
+  const needsAccess = access.required && !access.loading && !access.granted;
   // With --require-auth-all, management pages are gated too.
   const needsLoginAll = REQUIRE_AUTH_ALL && needsLogin;
   // The login redirect lands on the home page, so the notice belongs there only.
@@ -121,6 +126,8 @@ export default function App() {
                         <ReadOnlyLanding />
                       ) : needsLogin ? (
                         <LoginRequired />
+                      ) : needsAccess ? (
+                        <AccessGate />
                       ) : (
                         <CreateSecret />
                       )}
@@ -133,7 +140,12 @@ export default function App() {
                   <Route path="/upload" element={<LoginRequired />} />
                 ) : (
                   !DISABLE_UPLOAD && (
-                    <Route path="/upload" element={<StreamingUpload />} />
+                    <Route
+                      path="/upload"
+                      element={
+                        needsAccess ? <AccessGate /> : <StreamingUpload />
+                      }
+                    />
                   )
                 )}
                 {(SECRET_REQUESTS || SECRET_REQUESTS_DRAINING) && (

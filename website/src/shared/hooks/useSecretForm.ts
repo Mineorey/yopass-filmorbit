@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { randomString } from '@shared/lib/random';
 import { useConfig } from '@shared/hooks/useConfig';
+import { useAccess } from '@shared/hooks/useAccess';
+import { isAccessDenied } from '@shared/lib/api';
 
 export interface SecretFormState {
   readReceipt: boolean;
@@ -23,10 +25,12 @@ export interface SecretFormState {
   }) => void;
   getPassword: () => string;
   isCustomPassword: () => boolean;
+  handleAccessDenied: (status: number, message?: string) => boolean;
 }
 
 export function useSecretForm(): SecretFormState {
   const config = useConfig();
+  const { revoke } = useAccess();
   const [oneTime, setOneTime] = useState(
     config.FORCE_ONETIME_SECRETS || config.DEFAULT_ONETIME_SECRETS,
   );
@@ -49,6 +53,13 @@ export function useSecretForm(): SecretFormState {
     return !!customPassword && !generateKey;
   }
 
+  // Shows the access gate again when the access cookie is gone.
+  function handleAccessDenied(status: number, message?: string) {
+    if (!isAccessDenied(status, message)) return false;
+    revoke();
+    return true;
+  }
+
   return {
     readReceipt,
     setReadReceipt,
@@ -62,5 +73,6 @@ export function useSecretForm(): SecretFormState {
     setResult,
     getPassword,
     isCustomPassword,
+    handleAccessDenied,
   };
 }

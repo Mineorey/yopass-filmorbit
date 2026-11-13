@@ -5,11 +5,13 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { fetchRequestSecret } from '@shared/lib/api';
 import { decryptRequestSecret } from '@shared/lib/crypto';
 import { updateStoredRequest } from '@shared/lib/requestStore';
+import { AccessProvider } from '@shared/context/AccessProvider';
 import App from './App';
 
 const config = vi.hoisted(() => ({
   SECRET_REQUESTS: true,
   SECRET_REQUESTS_DRAINING: false,
+  ACCESS_PASSWORD_REQUIRED: false,
 }));
 vi.mock('@shared/hooks/useConfig', () => ({ useConfig: () => config }));
 vi.mock('@shared/hooks/useAuth', () => ({
@@ -30,7 +32,9 @@ vi.mock('@shared/components/Navbar', () => ({
 vi.mock('@features/request-secret/CreateRequest', () => ({
   default: () => <div>New request page</div>,
 }));
-vi.mock('@features/CreateSecret', () => ({ default: () => null }));
+vi.mock('@features/CreateSecret', () => ({
+  default: () => <div>Create secret page</div>,
+}));
 vi.mock('@features/StreamingUpload', () => ({ default: () => null }));
 vi.mock('@features/display-secret/Prefetcher', () => ({ default: () => null }));
 vi.mock('@features/request-secret/ProvideSecret', () => ({
@@ -76,6 +80,7 @@ beforeEach(async () => {
   vi.clearAllMocks();
   config.SECRET_REQUESTS = true;
   config.SECRET_REQUESTS_DRAINING = false;
+  config.ACCESS_PASSWORD_REQUIRED = false;
   resolveFetch = {};
   vi.mocked(fetchRequestSecret).mockImplementation(
     id =>
@@ -183,4 +188,36 @@ it('keeps existing-request pages available while new creation is disabled', asyn
   expect(container.querySelector('main a[href="#/request"]')).toBeNull();
   await clickText('Existing request link');
   expect(container.textContent).toContain('Respond to existing request');
+});
+
+async function renderGated(hash: string) {
+  config.ACCESS_PASSWORD_REQUIRED = true;
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ granted: false }),
+    })),
+  );
+  window.history.replaceState({}, '', hash);
+  await act(async () =>
+    root.render(
+      <AccessProvider>
+        <App />
+      </AccessProvider>,
+    ),
+  );
+}
+
+it('shows the access gate on the create page without access', async () => {
+  await renderGated('/#/');
+  expect(container.textContent).toContain('access.title');
+  expect(container.textContent).not.toContain('Create secret page');
+  expect(fetch).toHaveBeenCalledWith('/access', expect.anything());
+});
+
+it('does not gate secret display links', async () => {
+  await renderGated('/#/s/abc/key');
+  expect(container.textContent).not.toContain('access.title');
 });

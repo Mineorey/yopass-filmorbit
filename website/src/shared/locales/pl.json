@@ -148,6 +148,14 @@
     "loginRequiredDescription": "Musisz być zalogowany, aby tworzyć sekrety na tym serwerze.",
     "loginUnavailable": "Logowanie jest obecnie niedostępne, ponieważ licencja serwera wygasła. Skontaktuj się z administratorem."
   },
+  "access": {
+    "title": "Access for clients",
+    "description": "This page is for FilmOrbit clients. You will receive the access password from us.",
+    "passwordLabel": "Access password",
+    "submit": "Continue",
+    "invalid": "The password is incorrect. Please try again.",
+    "rateLimited": "Too many attempts. Please wait a few minutes."
+  },
   "accessibility": {
     "skipToContent": "Przejdź do głównej treści",
     "dismiss": "Zamknij"

@@ -8,10 +8,13 @@ import {
   getSecret,
   getSecretReceipt,
   getSecretRequest,
+  getAccessStatus,
   getSecretStatus,
+  isAccessDenied,
   postSecret,
   revokeSecretRequest,
   rotateRequestKey,
+  submitAccessPassword,
   uploadStreamingFile,
 } from './api';
 
@@ -431,3 +434,42 @@ it.each(['', '  ', '\n\t'])(
     ).toBe('HTTP 400');
   },
 );
+
+describe('access password', () => {
+  it('posts the password and maps the response status', async () => {
+    fetchMock.mockResolvedValueOnce(fakeResponse({ status: 204 }));
+    await expect(submitAccessPassword('pw')).resolves.toBe('ok');
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('/access');
+    expect(init).toMatchObject({
+      method: 'POST',
+      credentials: 'same-origin',
+    });
+    expect(JSON.parse(init.body)).toEqual({ password: 'pw' });
+
+    fetchMock.mockResolvedValueOnce(fakeResponse({ status: 401 }));
+    await expect(submitAccessPassword('pw')).resolves.toBe('invalid');
+    fetchMock.mockResolvedValueOnce(fakeResponse({ status: 429 }));
+    await expect(submitAccessPassword('pw')).resolves.toBe('rate_limited');
+  });
+
+  it('reads the access status', async () => {
+    fetchMock.mockResolvedValueOnce(
+      fakeResponse({ status: 200, body: { granted: true } }),
+    );
+    await expect(getAccessStatus()).resolves.toBe(true);
+    expect(fetchMock.mock.calls[0][0]).toBe('/access');
+    fetchMock.mockResolvedValueOnce(
+      fakeResponse({ status: 200, body: { granted: false } }),
+    );
+    await expect(getAccessStatus()).resolves.toBe(false);
+    fetchMock.mockRejectedValueOnce(new TypeError('offline'));
+    await expect(getAccessStatus()).resolves.toBe(false);
+  });
+
+  it('recognizes a missing access cookie on creation', () => {
+    expect(isAccessDenied(401, 'access password required')).toBe(true);
+    expect(isAccessDenied(401, 'HTTP 401')).toBe(false);
+    expect(isAccessDenied(403, 'access password required')).toBe(false);
+  });
+});

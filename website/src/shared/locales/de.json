@@ -146,6 +146,14 @@
     "loginRequiredDescription": "Du musst angemeldet sein, um Geheimnisse auf diesem Server zu erstellen.",
     "loginUnavailable": "Die Anmeldung ist derzeit nicht verfügbar, da die Serverlizenz abgelaufen ist. Bitte kontaktiere deinen Administrator."
   },
+  "access": {
+    "title": "Zugang für Kundinnen und Kunden",
+    "description": "Diese Seite ist für Kundinnen und Kunden von FilmOrbit. Das Zugangspasswort bekommst du von uns.",
+    "passwordLabel": "Zugangspasswort",
+    "submit": "Weiter",
+    "invalid": "Das Passwort stimmt nicht. Bitte versuch es noch einmal.",
+    "rateLimited": "Zu viele Versuche. Bitte warte ein paar Minuten."
+  },
   "accessibility": {
     "skipToContent": "Zum Hauptinhalt springen",
     "dismiss": "Schließen"

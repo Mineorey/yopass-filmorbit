@@ -138,6 +138,14 @@
     "title": "シークレットの取得",
     "description": "このインスタンスはシークレットの取得専用に設定されています。シークレットを表示するには、完全なリンクが必要です。"
   },
+  "access": {
+    "title": "Access for clients",
+    "description": "This page is for FilmOrbit clients. You will receive the access password from us.",
+    "passwordLabel": "Access password",
+    "submit": "Continue",
+    "invalid": "The password is incorrect. Please try again.",
+    "rateLimited": "Too many attempts. Please wait a few minutes."
+  },
   "accessibility": {
     "skipToContent": "メインコンテンツへスキップ",
     "dismiss": "閉じる"

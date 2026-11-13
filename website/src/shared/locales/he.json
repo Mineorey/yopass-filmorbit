@@ -148,6 +148,14 @@
     "loginRequiredDescription": "יש להתחבר כדי ליצור סודות בשרת זה.",
     "loginUnavailable": "ההתחברות אינה זמינה כרגע כי תוקף רישיון השרת פג. נא לפנות למנהל המערכת."
   },
+  "access": {
+    "title": "Access for clients",
+    "description": "This page is for FilmOrbit clients. You will receive the access password from us.",
+    "passwordLabel": "Access password",
+    "submit": "Continue",
+    "invalid": "The password is incorrect. Please try again.",
+    "rateLimited": "Too many attempts. Please wait a few minutes."
+  },
   "accessibility": {
     "skipToContent": "דילוג לתוכן הראשי",
     "dismiss": "סגירה"
