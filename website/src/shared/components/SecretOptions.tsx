@@ -121,6 +121,7 @@ export function SecretOptions<T extends SecretFormFields>({
           <input
             id="customPassword"
             type="password"
+            autoComplete="new-password"
             {...register('customPassword')}
             className="input input-bordered w-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             value={customPassword}
