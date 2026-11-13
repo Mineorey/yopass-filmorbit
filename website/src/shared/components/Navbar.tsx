@@ -58,7 +58,7 @@ export default function Navbar() {
   // and the settings menu (language, theme), no navigation links.
   if (responderPage) {
     return (
-      <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-5">
+      <header className="fo-container sticky top-0 z-50 pt-3 sm:pt-5">
         <div className="max-w-5xl mx-auto ps-3 pe-2 sm:ps-5 rounded-full bg-base-100 shadow-[0_6px_24px_rgba(5,13,15,0.10)]">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center min-w-0">{logo}</div>
@@ -72,7 +72,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-5">
+    <header className="fo-container sticky top-0 z-50 pt-3 sm:pt-5">
       <div className="max-w-5xl mx-auto ps-3 pe-2 sm:ps-5 rounded-full bg-base-100 shadow-[0_6px_24px_rgba(5,13,15,0.10)]">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center min-w-0">{logo}</div>

@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '@shared/hooks/useConfig';
 
+// The footer sits directly on the page gradient, so its text is white.
 const linkClass =
-  'text-base-content/70 hover:text-primary transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid';
+  'text-white underline underline-offset-4 decoration-white/60 hover:decoration-white transition-colors duration-200';
 
 // FilmOrbit Safe footer: imprint and privacy links (--imprint-url,
 // --privacy-notice-url), a link back to filmorbit.de and the Yopass
@@ -16,8 +17,8 @@ export default function FilmOrbitFooter() {
   ].filter(link => link.url?.trim());
 
   return (
-    <footer className="bg-base-100 border-t border-base-300">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+    <footer className="border-t border-white/20">
+      <div className="fo-container py-8">
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-sm">
           {links.map(link => (
             <span key={link.label} className="flex items-center gap-2">
@@ -29,19 +30,23 @@ export default function FilmOrbitFooter() {
               >
                 {link.label}
               </a>
-              <span className="text-base-content/40">•</span>
+              <span className="text-white/60" aria-hidden="true">
+                •
+              </span>
             </span>
           ))}
-          <span className="text-base-content/70">
+          <span className="text-white/85">
             &copy; {new Date().getFullYear()}{' '}
             <a
               href="https://filmorbit.de"
-              className="font-medium text-primary underline decoration-dotted underline-offset-4 hover:decoration-solid"
+              className={`font-medium ${linkClass}`}
             >
               FilmOrbit
             </a>
           </span>
-          <span className="text-base-content/40">•</span>
+          <span className="text-white/60" aria-hidden="true">
+            •
+          </span>
           <a
             href="https://github.com/jhaals/yopass"
             className={linkClass}

@@ -23,6 +23,8 @@ const STEPS = [
 
 const FAQ = ['faq1', 'faq2', 'faq3', 'faq4'] as const;
 
+// Headings and the intro sit directly on the page gradient (white text);
+// the steps and the FAQ keep their white boxes.
 export default function FeaturesSection() {
   const { t } = useTranslation();
   const { DISABLE_FEATURES, READ_ONLY } = useConfig();
@@ -31,10 +33,10 @@ export default function FeaturesSection() {
   return (
     <section className="mt-20 mb-8">
       <div className="mb-10 max-w-2xl">
-        <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mb-3 text-base-content">
+        <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mb-3 text-white">
           {t('features.title')}
         </h2>
-        <p className="text-base text-base-content/70 leading-relaxed">
+        <p className="text-base text-white/85 leading-relaxed">
           {t('features.subtitle')}
         </p>
       </div>
@@ -63,10 +65,10 @@ export default function FeaturesSection() {
           </li>
         ))}
       </ol>
-      <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mt-14 mb-6 text-base-content">
+      <h2 className="text-2xl sm:text-3xl font-medium tracking-tight mt-14 mb-6 text-white">
         {t('features.faqTitle')}
       </h2>
-      <div className="max-w-2xl overflow-hidden rounded-box border border-base-300 bg-base-100 divide-y divide-base-300">
+      <div className="overflow-hidden rounded-box border border-base-300 bg-base-100 divide-y divide-base-300">
         {FAQ.map(key => (
           <details key={key} className="group p-5">
             <summary className="cursor-pointer font-semibold text-base-content">
