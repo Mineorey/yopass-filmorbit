@@ -1,7 +1,7 @@
 (function () {
   try {
-    var DEFAULT_LIGHT = 'emerald';
-    var DEFAULT_DARK = 'dim';
+    var DEFAULT_LIGHT = 'filmorbit';
+    var DEFAULT_DARK = 'filmorbit';
     var storedMode = localStorage.getItem('themeMode'); // 'light' | 'dark'
     var prefersDark =
       window.matchMedia &&

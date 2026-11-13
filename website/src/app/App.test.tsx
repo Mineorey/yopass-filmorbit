@@ -221,3 +221,22 @@ it('does not gate secret display links', async () => {
   await renderGated('/#/s/abc/key');
   expect(container.textContent).not.toContain('access.title');
 });
+
+it('shows a spinner instead of the create form while access is loading', async () => {
+  config.ACCESS_PASSWORD_REQUIRED = true;
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(() => new Promise(() => {})),
+  );
+  window.history.replaceState({}, '', '/#/');
+  await act(async () =>
+    root.render(
+      <AccessProvider>
+        <App />
+      </AccessProvider>,
+    ),
+  );
+  expect(container.textContent).not.toContain('Create secret page');
+  expect(container.textContent).not.toContain('access.title');
+  expect(container.querySelector('main [role="status"]')).not.toBeNull();
+});

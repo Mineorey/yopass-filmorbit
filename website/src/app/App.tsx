@@ -11,6 +11,8 @@ import ReadOnlyLanding from '@features/ReadOnlyLanding';
 import LoginRequired from '@features/LoginRequired';
 import AccessGate from '@features/AccessGate';
 import { useAccess } from '@shared/hooks/useAccess';
+import { SpinnerIcon } from '@shared/components/icons';
+import FilmOrbitFooter from '@shared/components/FilmOrbitFooter';
 import CreateRequest from '@features/request-secret/CreateRequest';
 import RequestList from '@features/request-secret/RequestList';
 import RevealSecretModal, {
@@ -26,8 +28,6 @@ export default function App() {
   const {
     DISABLE_UPLOAD,
     READ_ONLY,
-    PRIVACY_NOTICE_URL,
-    IMPRINT_URL,
     REQUIRE_AUTH,
     REQUIRE_AUTH_ALL,
     SECRET_REQUESTS,
@@ -65,6 +65,18 @@ export default function App() {
   const needsLogin = REQUIRE_AUTH && !authLoading && !isAuthenticated;
   // Whether creation pages must show the access password gate instead.
   const needsAccess = access.required && !access.loading && !access.granted;
+  // While /access is still loading, show a spinner so the create form does not
+  // flash before the gate replaces it.
+  const accessPending = access.required && access.loading;
+  const accessSpinner = (
+    <div
+      role="status"
+      aria-label={t('display.loading')}
+      className="flex justify-center py-16"
+    >
+      <SpinnerIcon className="animate-spin h-8 w-8 text-primary" />
+    </div>
+  );
   // With --require-auth-all, management pages are gated too.
   const needsLoginAll = REQUIRE_AUTH_ALL && needsLogin;
   // The login redirect lands on the home page, so the notice belongs there only.
@@ -126,6 +138,8 @@ export default function App() {
                         <ReadOnlyLanding />
                       ) : needsLogin ? (
                         <LoginRequired />
+                      ) : accessPending ? (
+                        accessSpinner
                       ) : needsAccess ? (
                         <AccessGate />
                       ) : (
@@ -143,7 +157,13 @@ export default function App() {
                     <Route
                       path="/upload"
                       element={
-                        needsAccess ? <AccessGate /> : <StreamingUpload />
+                        accessPending ? (
+                          accessSpinner
+                        ) : needsAccess ? (
+                          <AccessGate />
+                        ) : (
+                          <StreamingUpload />
+                        )
                       }
                     />
                   )
@@ -213,52 +233,7 @@ export default function App() {
           />
         )}
       </HashRouter>
-      {/* Footer */}
-      <footer className="bg-base-100 border-t border-base-300">
-        <div className="max-w-5xl mx-auto px-4 py-8">
-          <div className="flex flex-col items-center text-center space-y-4">
-            <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
-              {PRIVACY_NOTICE_URL && PRIVACY_NOTICE_URL.trim() && (
-                <>
-                  <a
-                    href={PRIVACY_NOTICE_URL}
-                    className="text-base-content/70 hover:text-primary transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('footer.privacyNotice')}
-                  </a>
-                  <span className="text-base-content/40">•</span>
-                </>
-              )}
-              {IMPRINT_URL && IMPRINT_URL.trim() && (
-                <>
-                  <a
-                    href={IMPRINT_URL}
-                    className="text-base-content/70 hover:text-primary transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('footer.imprint')}
-                  </a>
-                  <span className="text-base-content/40">•</span>
-                </>
-              )}
-              <span className="text-base-content/70">
-                &copy; 2014&ndash;{new Date().getFullYear()}{' '}
-                <a
-                  href="https://yopass.se"
-                  className="text-primary hover:text-primary-focus font-medium transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Yopass
-                </a>
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <FilmOrbitFooter />
     </div>
   );
 }

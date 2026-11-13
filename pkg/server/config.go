@@ -5,12 +5,14 @@ import (
 	"net/http"
 )
 
-// DefaultThemeLight and DefaultThemeDark are the built-in DaisyUI themes used
-// when no valid license overrides them. cmd/yopass-server uses them as the
+// DefaultThemeLight and DefaultThemeDark are the DaisyUI themes used
+// when no valid license overrides them (FilmOrbit fork: its own light-only
+// "filmorbit" theme from website/src/shared/styles/index.css for both modes).
+// cmd/yopass-server uses them as the
 // defaults for the --theme-light and --theme-dark flags.
 const (
-	DefaultThemeLight = "emerald"
-	DefaultThemeDark  = "dim"
+	DefaultThemeLight = "filmorbit"
+	DefaultThemeDark  = "filmorbit"
 )
 
 func (y *Server) configHandler(w http.ResponseWriter, r *http.Request) {

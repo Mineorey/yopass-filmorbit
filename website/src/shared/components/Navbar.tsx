@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useTheme } from '../theme/ThemeProvider';
 import { useConfig } from '../hooks/useConfig';
 import { useAuth } from '../hooks/useAuth';
 import SettingsMenu from './SettingsMenu';
+import FilmOrbitBrand from './FilmOrbitBrand';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useResponderPage } from '../hooks/useResponderPage';
@@ -14,16 +14,11 @@ export default function Navbar() {
   const {
     DISABLE_UPLOAD,
     READ_ONLY,
-    APP_NAME,
-    HIDE_APP_NAME,
-    LOGO_URL,
     OIDC_ENABLED,
     SECRET_REQUESTS,
     SECRET_REQUESTS_DRAINING,
     READ_RECEIPTS,
   } = useConfig();
-  const { mode } = useTheme();
-  const customBranding = Boolean(LOGO_URL || APP_NAME || HIDE_APP_NAME);
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const location = useLocation();
@@ -57,40 +52,14 @@ export default function Navbar() {
     location.pathname,
   ]);
 
-  const logo = (
-    <a
-      className="flex items-center text-lg font-bold tracking-tight text-base-content hover:text-primary transition-colors duration-200 px-2 py-1 rounded-field hover:bg-base-200 min-w-0"
-      href="/"
-    >
-      {customBranding ? (
-        <>
-          <img
-            src={LOGO_URL ?? '/yopass.svg'}
-            alt={APP_NAME ?? 'Yopass'}
-            className={`h-8 w-auto max-w-16 object-contain shrink-0${HIDE_APP_NAME ? '' : ' me-2 sm:me-3'}`}
-          />
-          {!HIDE_APP_NAME && (
-            <span className="truncate">{APP_NAME ?? t('header.appName')}</span>
-          )}
-        </>
-      ) : (
-        <img
-          src={mode === 'dark' ? '/yopass-full-dark.svg' : '/yopass-full.svg'}
-          alt="Yopass"
-          width={138}
-          height={28}
-          className="h-6 w-auto sm:h-7 shrink-0"
-        />
-      )}
-    </a>
-  );
+  const logo = <FilmOrbitBrand />;
 
   // The responder page of a secret request gets a minimal header: branding
   // and the settings menu (language, theme), no navigation links.
   if (responderPage) {
     return (
-      <header className="sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-300">
-        <div className="max-w-5xl mx-auto px-4">
+      <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-5">
+        <div className="max-w-5xl mx-auto ps-3 pe-2 sm:ps-5 rounded-full bg-base-100 shadow-[0_6px_24px_rgba(5,13,15,0.10)]">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center min-w-0">{logo}</div>
             <div className="shrink-0">
@@ -103,8 +72,8 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-300">
-      <div className="max-w-5xl mx-auto px-4">
+    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-5">
+      <div className="max-w-5xl mx-auto ps-3 pe-2 sm:ps-5 rounded-full bg-base-100 shadow-[0_6px_24px_rgba(5,13,15,0.10)]">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center min-w-0">{logo}</div>
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
