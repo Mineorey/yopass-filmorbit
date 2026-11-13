@@ -451,6 +451,10 @@ describe('access password', () => {
     await expect(submitAccessPassword('pw')).resolves.toBe('invalid');
     fetchMock.mockResolvedValueOnce(fakeResponse({ status: 429 }));
     await expect(submitAccessPassword('pw')).resolves.toBe('rate_limited');
+    fetchMock.mockResolvedValueOnce(fakeResponse({ status: 502 }));
+    await expect(submitAccessPassword('pw')).resolves.toBe('error');
+    fetchMock.mockRejectedValueOnce(new TypeError('offline'));
+    await expect(submitAccessPassword('pw')).resolves.toBe('error');
   });
 
   it('reads the access status', async () => {

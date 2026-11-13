@@ -155,7 +155,8 @@
     "passwordLabel": "Access password",
     "submit": "Continue",
     "invalid": "The password is incorrect. Please try again.",
-    "rateLimited": "Too many attempts. Please wait a few minutes."
+    "rateLimited": "Too many attempts. Please wait a few minutes.",
+    "error": "Connection failed. Please try again in a moment."
   },
   "accessibility": {
     "skipToContent": "Ana içeriğe geç",

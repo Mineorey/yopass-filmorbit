@@ -114,6 +114,19 @@ it('shows the rate limit message on 429', async () => {
   expect(grant).not.toHaveBeenCalled();
 });
 
+it.each([
+  ['a network error', () => fetchMock.mockRejectedValue(new TypeError('x'))],
+  ['a 500 response', () => fetchMock.mockResolvedValue(response(500))],
+])('shows the connection message on %s', async (_, arrange) => {
+  arrange();
+  await typeAndEnter('geheim');
+  expect(container.textContent).toContain(
+    'Verbindung fehlgeschlagen. Bitte versuch es gleich noch einmal.',
+  );
+  expect(container.textContent).not.toContain('Das Passwort stimmt nicht');
+  expect(grant).not.toHaveBeenCalled();
+});
+
 it('grants access on 204', async () => {
   fetchMock.mockResolvedValue(response(204));
   await typeAndEnter('geheim');

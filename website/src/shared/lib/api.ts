@@ -340,7 +340,7 @@ export async function getAccessStatus(): Promise<boolean> {
   return data?.granted ?? false;
 }
 
-export type AccessResult = 'ok' | 'invalid' | 'rate_limited';
+export type AccessResult = 'ok' | 'invalid' | 'rate_limited' | 'error';
 
 export async function submitAccessPassword(
   password: string,
@@ -353,6 +353,9 @@ export async function submitAccessPassword(
   });
   if (status === 204) return 'ok';
   if (status === 429) return 'rate_limited';
+  // Network failures (status 0) and server errors say nothing about the
+  // password, so they must not be reported as a wrong password.
+  if (status === 0 || status >= 500) return 'error';
   return 'invalid';
 }
 

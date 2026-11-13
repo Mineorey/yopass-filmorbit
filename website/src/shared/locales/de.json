@@ -155,7 +155,8 @@
     "passwordLabel": "Zugangspasswort",
     "submit": "Weiter",
     "invalid": "Das Passwort stimmt nicht. Bitte versuch es noch einmal.",
-    "rateLimited": "Zu viele Versuche. Bitte warte ein paar Minuten."
+    "rateLimited": "Zu viele Versuche. Bitte warte ein paar Minuten.",
+    "error": "Verbindung fehlgeschlagen. Bitte versuch es gleich noch einmal."
   },
   "accessibility": {
     "skipToContent": "Zum Hauptinhalt springen",

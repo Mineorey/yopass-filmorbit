@@ -64,7 +64,9 @@ export default function AccessGate() {
               {t(
                 error === 'rate_limited'
                   ? 'access.rateLimited'
-                  : 'access.invalid',
+                  : error === 'error'
+                    ? 'access.error'
+                    : 'access.invalid',
               )}
             </p>
           )}
