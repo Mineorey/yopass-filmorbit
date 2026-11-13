@@ -1,0 +1,12 @@
+# FilmOrbit Safe – in die bestehende Caddyfile einfügen (eine der beiden Varianten).
+# Caddy holt das HTTPS-Zertifikat für safe.filmorbit.de automatisch.
+
+# Variante A: Caddy läuft direkt auf dem Server
+safe.filmorbit.de {
+	reverse_proxy 127.0.0.1:1337
+}
+
+# Variante B: Caddy läuft in Docker und ist im selben Netz wie Yopass
+# safe.filmorbit.de {
+# 	reverse_proxy yopass:1337
+# }

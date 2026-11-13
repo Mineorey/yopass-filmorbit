@@ -28,3 +28,6 @@ website/cypress/screenshots
 
 .idea
 /yopass-server
+
+# FilmOrbit Safe: echte Server-Konfiguration (Zugangspasswort) nie committen
+deploy/filmorbit/.env
