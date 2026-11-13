@@ -82,10 +82,15 @@ nano .env
     feste Subnetz des Docker-Netzes aus `docker-compose.yml`: Caddy verbindet sich zwar mit
     `127.0.0.1:1337`, im Container kommt die Verbindung aber vom Docker-Gateway
     (`172.30.47.1`) an. Dem ganzen Subnetz zu vertrauen ist unbedenklich, dort hängen nur
-    memcached und die von Caddy weitergeleiteten Verbindungen. Falls `docker compose up`
-    meldet, dass das Subnetz schon belegt ist („Pool overlaps“), in `docker-compose.yml`
-    und `.env` ein anderes freies `/24` eintragen (z. B. `172.30.48.0/24`).
-  - Variante B: das Subnetz des Caddy-Netzes, siehe unten
+    memcached und die von Caddy weitergeleiteten Verbindungen.
+  - Variante B: den Standardwert `172.30.47.0/24` **ersetzen** durch das Subnetz des
+    Caddy-Netzes, siehe unten. Bleibt der Standardwert stehen, kommen bei Variante B alle
+    Kunden mit der Adresse des Caddy-Containers an und teilen sich ein Anfrage-Limit.
+- Gilt für **beide Varianten**: Das Docker-Netz aus `docker-compose.yml` nutzt immer das
+  feste Subnetz `172.30.47.0/24`. Falls `docker compose up` meldet, dass es schon belegt
+  ist („Pool overlaps“), in `docker-compose.yml` ein anderes freies `/24` eintragen
+  (z. B. `172.30.48.0/24`) und bei Variante A dasselbe Subnetz auch in `.env` bei
+  `TRUSTED_PROXIES`.
 
 Nur für **Variante B** zusätzlich:
 
@@ -96,7 +101,8 @@ docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}' 
 docker network inspect -f '{{range .IPAM.Config}}{{.Subnet}} {{end}}' <netzname>
 ```
 
-In `.env` eintragen, z. B.:
+In `.env` eintragen und dabei die vorhandene Zeile `TRUSTED_PROXIES=172.30.47.0/24`
+**ersetzen** (nicht ergänzen), z. B.:
 
 ```sh
 CADDY_NETWORK=caddy
@@ -212,13 +218,22 @@ Auf dem eigenen Rechner im geklonten Repository:
 ```sh
 git remote add upstream https://github.com/jhaals/yopass.git   # nur beim ersten Mal
 git checkout master
+git pull origin master
 git fetch upstream
+git checkout -b chore/upstream-merge
 git merge upstream/master
 # Konflikte ggf. lösen, lokal testen
-git push origin master
+git push -u origin chore/upstream-merge
 ```
 
-Der Push baut automatisch das neue Image; danach auf dem Server wie unter
+Danach auf GitHub einen Pull Request von `chore/upstream-merge` nach `master` öffnen und
+erst mergen, wenn alle Prüfungen (CI) grün sind. Nicht direkt auf `master` pushen.
+
+Typischer Konflikt: Upstream ändert einen Workflow, den dieser Fork gelöscht hat
+(`CONFLICT (modify/delete)` für eine Datei unter `.github/workflows/`). Die Datei soll
+gelöscht bleiben: `git rm <datei>` ausführen und den Merge mit `git commit` abschließen.
+
+Der Merge nach `master` baut automatisch das neue Image; danach auf dem Server wie unter
 „Updates einspielen“ `docker compose pull && docker compose up -d`.
 
 Hinweis: Die Upstream-Workflows, die offizielle Yopass-Images oder Releases
