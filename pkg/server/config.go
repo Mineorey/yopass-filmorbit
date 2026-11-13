@@ -63,6 +63,7 @@ func (y *Server) configHandler(w http.ResponseWriter, r *http.Request) {
 	config["OIDC_ENABLED"] = y.oidcEnabled()
 	config["REQUIRE_AUTH"] = y.oidcEnabled() && (y.RequireAuth || y.RequireAuthAll)
 	config["REQUIRE_AUTH_ALL"] = y.oidcEnabled() && y.RequireAuthAll
+	config["ACCESS_PASSWORD_REQUIRED"] = y.accessEnabled()
 	// Read once: the license can expire between two calls and set both flags.
 	requestsEnabled := y.secretRequestsEnabled()
 	config["SECRET_REQUESTS"] = requestsEnabled

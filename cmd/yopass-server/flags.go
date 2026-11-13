@@ -90,6 +90,7 @@ func init() {
 	pflag.StringSlice("trusted-proxies", []string{}, "trusted proxy IP addresses or CIDR blocks for X-Forwarded-For header validation")
 	pflag.String("privacy-notice-url", "", "URL to privacy notice page")
 	pflag.String("imprint-url", "", "URL to imprint/legal notice page")
+	pflag.String("access-password", "", "shared password visitors must enter before creating secrets or uploading files (empty disables; viewing secrets stays open)")
 	pflag.String("public-url", "", "base URL of the public/read-only instance used in generated secret links (e.g. https://secrets.example.com)")
 	pflag.Bool("allow-custom-expiration", false, "allow user-entered expiration durations within configured bounds")
 	pflag.String("min-expiration", "1m", "minimum custom expiration (integer s, m, h, d, w units)")

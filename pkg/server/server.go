@@ -90,6 +90,11 @@ type Server struct {
 	// ForceExpiration, when non-empty, is the server-enforced secret lifetime
 	// as a human-readable duration. Clients may not choose a different value.
 	ForceExpiration string
+
+	// AccessPassword, when non-empty, is a shared password visitors must
+	// enter (POST /access) before they may create secrets or upload files.
+	AccessPassword string
+	accessAttempts *accessLimiter
 }
 
 // corsPreflight returns an OPTIONS handler advertising the given methods and
@@ -117,7 +122,7 @@ func (y *Server) HTTPHandler() http.Handler {
 
 	// Only register write endpoints if not in read-only mode
 	if !y.ReadOnly {
-		mx.Handle("/create/secret", y.maybeRequireAuth("secret.created", y.createSecret)).Methods(http.MethodPost)
+		mx.Handle("/create/secret", y.requireAccess(y.maybeRequireAuth("secret.created", y.createSecret))).Methods(http.MethodPost)
 		mx.HandleFunc("/create/secret", secretOptions).Methods(http.MethodOptions)
 	}
 
@@ -164,6 +169,13 @@ func (y *Server) HTTPHandler() http.Handler {
 	mx.HandleFunc("/config", y.configHandler).Methods(http.MethodGet)
 	mx.HandleFunc("/config", corsPreflight("GET, OPTIONS", "")).Methods(http.MethodOptions)
 
+	// Shared access password routes — only registered when configured
+	if y.accessEnabled() {
+		y.accessAttempts = newAccessLimiter()
+		mx.HandleFunc("/access", y.accessLoginHandler).Methods(http.MethodPost)
+		mx.HandleFunc("/access", y.accessStatusHandler).Methods(http.MethodGet)
+	}
+
 	// OIDC authentication routes — only registered when OIDC is configured
 	if y.oidcEnabled() {
 		mx.HandleFunc("/auth/login", y.oidcLoginHandler).Methods(http.MethodGet)
@@ -177,7 +189,7 @@ func (y *Server) HTTPHandler() http.Handler {
 		y.FileStore = NewDatabaseFileStore(y.DB)
 	}
 	if !y.ReadOnly && !y.DisableUpload {
-		mx.Handle("/create/file", y.maybeRequireAuth("file.uploaded", y.streamUpload)).Methods(http.MethodPost)
+		mx.Handle("/create/file", y.requireAccess(y.maybeRequireAuth("file.uploaded", y.streamUpload))).Methods(http.MethodPost)
 		mx.HandleFunc("/create/file", y.streamOptions).Methods(http.MethodOptions)
 	}
 	if !y.DisableUpload {

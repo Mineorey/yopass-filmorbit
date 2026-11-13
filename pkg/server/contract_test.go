@@ -238,6 +238,7 @@ func TestConfigContractKeys(t *testing.T) {
 
 	t.Run("unlicensed default", func(t *testing.T) {
 		want := []string{
+			"ACCESS_PASSWORD_REQUIRED",
 			"ALLOW_CUSTOM_EXPIRATION",
 			"ARGON2",
 			"DEFAULT_EXPIRY",
@@ -270,6 +271,7 @@ func TestConfigContractKeys(t *testing.T) {
 
 	t.Run("licensed fully configured", func(t *testing.T) {
 		want := []string{
+			"ACCESS_PASSWORD_REQUIRED",
 			"ALLOW_CUSTOM_EXPIRATION",
 			"APP_NAME",
 			"ARGON2",
