@@ -45,3 +45,10 @@ services:
 networks:
   safe:
     name: filmorbit-safe
+    # Festes Subnetz: Caddy auf dem Server (Variante A) erscheint im Container
+    # als Gateway dieses Netzes (z. B. 172.30.47.1), nicht als 127.0.0.1.
+    # TRUSTED_PROXIES in .env zeigt deshalb auf dieses Subnetz. Falls es auf dem
+    # Server schon belegt ist, hier und in .env ein anderes /24 eintragen.
+    ipam:
+      config:
+        - subnet: 172.30.47.0/24

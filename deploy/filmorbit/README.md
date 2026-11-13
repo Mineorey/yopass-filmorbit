@@ -9,7 +9,8 @@ zum **Öffnen** eines Links nicht.
 
 Auf dem Server laufen zwei Container in einem eigenen Docker-Netz:
 
-- `yopass` – die App (Image `ghcr.io/mineorey/yopass-filmorbit:latest`)
+- `yopass` – die App (Image `ghcr.io/mineorey/yopass-filmorbit:latest`; gebaut für
+  normale amd64-/x86-Server, nicht für ARM-Server)
 - `memcached` – Zwischenspeicher für die verschlüsselten Geheimnisse (nur im Arbeitsspeicher)
 
 HTTPS übernimmt das vorhandene **Caddy**. Dieser Stack belegt die Ports 80/443 nicht
@@ -77,7 +78,13 @@ nano .env
   Impressum und Datenschutz von filmorbit.de).
 - `TRUSTED_PROXIES` – **muss** zur Variante passen, sonst teilen sich alle Kunden ein
   gemeinsames Anfrage-Limit und sperren sich gegenseitig aus:
-  - Variante A: `TRUSTED_PROXIES=127.0.0.1` (Standard, nichts ändern)
+  - Variante A: `TRUSTED_PROXIES=172.30.47.0/24` (Standard, nichts ändern). Das ist das
+    feste Subnetz des Docker-Netzes aus `docker-compose.yml`: Caddy verbindet sich zwar mit
+    `127.0.0.1:1337`, im Container kommt die Verbindung aber vom Docker-Gateway
+    (`172.30.47.1`) an. Dem ganzen Subnetz zu vertrauen ist unbedenklich, dort hängen nur
+    memcached und die von Caddy weitergeleiteten Verbindungen. Falls `docker compose up`
+    meldet, dass das Subnetz schon belegt ist („Pool overlaps“), in `docker-compose.yml`
+    und `.env` ein anderes freies `/24` eintragen (z. B. `172.30.48.0/24`).
   - Variante B: das Subnetz des Caddy-Netzes, siehe unten
 
 Nur für **Variante B** zusätzlich:
@@ -117,6 +124,18 @@ ausführen – danach reicht überall das kurze `docker compose …` wie bei Var
 
 Prüfen: `docker compose ps` zeigt beide Container als "running" bzw. "healthy".
 Bei Variante A zusätzlich: `curl -I http://127.0.0.1:1337` liefert `HTTP/1.1 200 OK`.
+
+**Wichtig – prüfen, ob die Kunden-IP ankommt** (sonst teilen sich alle Kunden ein Limit):
+Nach Schritt 5 (Caddy) `https://safe.filmorbit.de` im Browser öffnen und dann
+
+```sh
+docker compose logs --tail 20 yopass
+```
+
+ansehen. Bei `"host":"…"` muss die **eigene öffentliche IP** stehen (z. B. auf
+wieistmeineip.de nachsehen), nicht `172.…` oder `127.0.0.1`. Steht dort eine `172.…`-Adresse,
+passt `TRUSTED_PROXIES` nicht zu der Adresse, von der Caddy kommt: genau diese Adresse
+(oder ihr Subnetz) in `.env` eintragen und `docker compose up -d` ausführen.
 
 Falls `pull` mit "denied" oder "unauthorized" abbricht, siehe „Image ist privat“ unten.
 
