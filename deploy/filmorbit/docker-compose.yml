@@ -14,7 +14,10 @@ services:
     image: memcached:1.6-alpine
     restart: unless-stopped
     # 64 MB Speicher reichen für Textgeheimnisse und Dateien bis 1 MB.
-    command: ["memcached", "-m", "64"]
+    # -I 2m: Dateien werden verschlüsselt und base64-kodiert gespeichert und
+    # sind dadurch rund ein Drittel größer. Mit der Standardgrenze von 1 MB pro
+    # Eintrag scheitern Dateien ab etwa 750 KB.
+    command: ["memcached", "-m", "64", "-I", "2m"]
     networks:
       - safe
 
