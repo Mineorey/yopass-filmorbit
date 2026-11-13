@@ -20,7 +20,7 @@ test.describe('Navbar Button Switching', () => {
     // Check that Upload button is visible
     const uploadButton = page.locator('a[href="#/upload"]');
     await expect(uploadButton).toBeVisible();
-    await expect(uploadButton).toHaveText('Upload');
+    await expect(uploadButton).toHaveText('Hochladen');
 
     // Check that Text button is not visible
     const textButton = page.locator('a[href="#/"]').filter({ hasText: 'Text' });
@@ -57,7 +57,7 @@ test.describe('Navbar Button Switching', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify we're on upload page and Text button is now visible
-    await expect(page.locator('h2:has-text("Upload file")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Datei hochladen")')).toBeVisible();
     const textButton = page.locator('a[href="#/"]').filter({ hasText: 'Text' });
     await expect(textButton).toBeVisible();
     await expect(uploadButton).not.toBeVisible();
@@ -79,7 +79,9 @@ test.describe('Navbar Button Switching', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify we're on home page and Upload button is now visible
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
     const uploadButton = page.locator('a[href="#/upload"]');
     await expect(uploadButton).toBeVisible();
     await expect(textButton).not.toBeVisible();

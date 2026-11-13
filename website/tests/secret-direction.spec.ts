@@ -6,8 +6,12 @@ const lines = ['סיסמה ראשית', '123-456!', 'passw0rd!', '(admin)', 'ס�
 const secret = lines.join('\n');
 const id = '11111111-2222-3333-4444-555555555555';
 
+// FilmOrbit forces German on every page load and ignores a saved language,
+// so switch at runtime through the settings menu instead.
 async function setLanguage(page: Page, language: string) {
-  await page.evaluate(l => localStorage.setItem('i18nextLng', l), language);
+  await page.click('[data-testid="settings-menu-button"]');
+  await page.selectOption('#settings-language', language);
+  await page.keyboard.press('Escape');
 }
 
 // Horizontal position of the first and last character of each line.
@@ -52,7 +56,6 @@ test.describe('Secret text direction', () => {
 
       await page.goto('/');
       await setLanguage(page, sender);
-      await page.reload();
       const input = page.locator('#secret');
       // The placeholder is page text and follows the page; content does not.
       await expect(input).toHaveCSS(
@@ -67,11 +70,15 @@ test.describe('Secret text direction', () => {
       await page.locator('form button[type=submit]').click();
       const link = await page.locator('code').first().textContent();
 
-      await setLanguage(page, recipient);
       await page.goto(link!);
       await page.reload();
       const shown = page.getByTestId('decrypted-secret');
       await expect(shown).toHaveText(secret, { useInnerText: true });
+      await setLanguage(page, recipient);
+      await expect(page.locator('html')).toHaveAttribute(
+        'dir',
+        recipient === 'he' ? 'rtl' : 'ltr',
+      );
 
       expect(
         await shown.evaluate(e => {

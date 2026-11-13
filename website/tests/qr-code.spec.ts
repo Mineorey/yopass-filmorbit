@@ -48,23 +48,25 @@ test.describe('QR Code', () => {
     await page.goto(`/#/s/${secretId}/${password}`);
 
     // Wait for the decrypted message heading
-    await expect(page.locator('h2:has-text("Decrypted Message")')).toBeVisible({
+    await expect(
+      page.locator('h2:has-text("Entschlüsselte Nachricht")'),
+    ).toBeVisible({
       timeout: 15000,
     });
 
     // Decrypted text should be visible
     await expect(page.locator(`text=${plaintext}`)).toBeVisible();
 
-    // "Show QR Code" button should be present
-    const showQRButton = page.locator('button[aria-label="Show QR Code"]');
+    // "QR-Code anzeigen" button should be present
+    const showQRButton = page.locator('button[aria-label="QR-Code anzeigen"]');
     await expect(showQRButton).toBeVisible();
 
     // Click to show QR code
     await showQRButton.click();
 
-    // The button label should now read "Hide QR Code"
+    // The button label should now read "QR-Code ausblenden"
     await expect(
-      page.locator('button[aria-label="Hide QR Code"]'),
+      page.locator('button[aria-label="QR-Code ausblenden"]'),
     ).toBeVisible();
 
     // An SVG with role="img" (rendered by QRCodeSVG) should be visible
@@ -90,21 +92,23 @@ test.describe('QR Code', () => {
     await mockAPI.mockGetSecret(secretId, { message: encryptedMessage });
 
     await page.goto(`/#/s/${secretId}/${password}`);
-    await expect(page.locator('h2:has-text("Decrypted Message")')).toBeVisible({
+    await expect(
+      page.locator('h2:has-text("Entschlüsselte Nachricht")'),
+    ).toBeVisible({
       timeout: 15000,
     });
 
     // Show the QR code
-    await page.click('button[aria-label="Show QR Code"]');
+    await page.click('button[aria-label="QR-Code anzeigen"]');
     await expect(page.locator('svg[role="img"]')).toBeVisible();
 
     // Hide the QR code
-    await page.click('button[aria-label="Hide QR Code"]');
+    await page.click('button[aria-label="QR-Code ausblenden"]');
     await expect(page.locator('svg[role="img"]')).not.toBeVisible();
 
-    // Button label reverts to "Show QR Code"
+    // Button label reverts to "QR-Code anzeigen"
     await expect(
-      page.locator('button[aria-label="Show QR Code"]'),
+      page.locator('button[aria-label="QR-Code anzeigen"]'),
     ).toBeVisible();
   });
 
@@ -120,13 +124,15 @@ test.describe('QR Code', () => {
     await mockAPI.mockGetSecret(secretId, { message: encryptedMessage });
 
     await page.goto(`/#/s/${secretId}/${password}`);
-    await expect(page.locator('h2:has-text("Decrypted Message")')).toBeVisible({
+    await expect(
+      page.locator('h2:has-text("Entschlüsselte Nachricht")'),
+    ).toBeVisible({
       timeout: 15000,
     });
 
     // QR code button must NOT appear for long secrets
     await expect(
-      page.locator('button[aria-label="Show QR Code"]'),
+      page.locator('button[aria-label="QR-Code anzeigen"]'),
     ).not.toBeVisible();
   });
 });

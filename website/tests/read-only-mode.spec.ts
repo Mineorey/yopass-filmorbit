@@ -21,10 +21,12 @@ test.describe('Read-Only Mode', () => {
     await page.waitForLoadState('networkidle');
 
     // Check for read-only landing page elements
-    await expect(page.locator('h1:has-text("Secret Retrieval")')).toBeVisible();
+    await expect(
+      page.locator('h1:has-text("Geheimnis Abrufen")'),
+    ).toBeVisible();
     await expect(
       page.locator(
-        'text=This instance is configured for secret retrieval only',
+        'text=Diese Instanz ist nur zum Abrufen von Geheimnissen konfiguriert',
       ),
     ).toBeVisible();
 
@@ -41,10 +43,10 @@ test.describe('Read-Only Mode', () => {
 
     // Create form should not be visible
     await expect(
-      page.locator('h2:has-text("Encrypt message")'),
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
     ).not.toBeVisible();
     await expect(
-      page.locator('textarea[placeholder="Enter your secret..."]'),
+      page.locator('textarea[placeholder="Gib dein Geheimnis ein..."]'),
     ).not.toBeVisible();
   });
 
@@ -56,7 +58,7 @@ test.describe('Read-Only Mode', () => {
     await page.waitForLoadState('networkidle');
 
     // Upload button should not be visible
-    await expect(page.locator('text=Upload').first()).not.toBeVisible();
+    await expect(page.locator('text=Hochladen').first()).not.toBeVisible();
 
     // Text button should not be visible
     await expect(
@@ -74,7 +76,7 @@ test.describe('Read-Only Mode', () => {
 
     // Features section should be hidden even if DISABLE_FEATURES is false
     await expect(
-      page.locator('h2:has-text("Share secrets securely with ease")'),
+      page.locator('h2:has-text("Zugangsdaten sicher an FilmOrbit schicken")'),
     ).not.toBeVisible();
   });
 
@@ -96,7 +98,7 @@ test.describe('Read-Only Mode', () => {
     // Verify that the page didn't redirect to read-only landing
     // (secret retrieval should work in read-only mode)
     await expect(
-      page.locator('h1:has-text("Secret Retrieval")'),
+      page.locator('h1:has-text("Geheimnis Abrufen")'),
     ).not.toBeVisible();
   });
 
@@ -109,7 +111,9 @@ test.describe('Read-Only Mode', () => {
     await expect(page.locator('a[href="#/upload"]')).not.toBeVisible();
 
     // Read-only landing should be visible on homepage
-    await expect(page.locator('h1:has-text("Secret Retrieval")')).toBeVisible();
+    await expect(
+      page.locator('h1:has-text("Geheimnis Abrufen")'),
+    ).toBeVisible();
   });
 
   test('should display create form when READ_ONLY is false (normal mode)', async ({
@@ -120,14 +124,16 @@ test.describe('Read-Only Mode', () => {
     await page.waitForLoadState('networkidle');
 
     // Create form should be visible
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
     await expect(
-      page.locator('textarea[placeholder="Enter your secret..."]'),
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
+    await expect(
+      page.locator('textarea[placeholder="Gib dein Geheimnis ein..."]'),
     ).toBeVisible();
 
     // Read-only landing should not be visible
     await expect(
-      page.locator('h1:has-text("Secret Retrieval")'),
+      page.locator('h1:has-text("Geheimnis Abrufen")'),
     ).not.toBeVisible();
   });
 
@@ -155,7 +161,7 @@ test.describe('Read-Only Mode', () => {
 
     // Features section should be visible
     await expect(
-      page.locator('h2:has-text("Share secrets securely with ease")'),
+      page.locator('h2:has-text("Zugangsdaten sicher an FilmOrbit schicken")'),
     ).toBeVisible();
   });
 });

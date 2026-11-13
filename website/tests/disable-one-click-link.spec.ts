@@ -24,14 +24,14 @@ for (const disabled of [false, true]) {
       }
       await page.locator('button[type="submit"]').click();
       await expect(
-        page.getByRole('heading', { name: 'Secret stored securely' }),
+        page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
       ).toBeVisible();
 
       const combinedLink = page.locator('button[title="Copy one-click link"]');
       if (disabled) {
         await expect(combinedLink).toHaveCount(0);
         await expect(
-          page.getByText('One-click link', { exact: true }),
+          page.getByText('Ein-Klick-Link', { exact: true }),
         ).toHaveCount(0);
         await expect(page.locator('code')).toHaveCount(2);
       } else {

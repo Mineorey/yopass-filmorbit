@@ -223,6 +223,7 @@ export class MockAPI {
     APP_NAME?: string;
     PUBLIC_URL?: string;
     ARGON2?: boolean;
+    ACCESS_PASSWORD_REQUIRED?: boolean;
   }) {
     const defaultConfig = {
       DISABLE_UPLOAD: false,

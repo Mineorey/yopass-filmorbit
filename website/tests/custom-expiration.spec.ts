@@ -24,23 +24,25 @@ for (const path of ['/', '/#/upload', '/#/request']) {
     const api = new MockAPI(page);
     await api.mockConfigEndpoint(customConfig);
     await page.goto(path);
-    await page.getByRole('radio', { name: 'Custom', exact: true }).check();
+    await page
+      .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+      .check();
     // Filling the field programmatically does not dismiss Firefox's native popup.
     await page.keyboard.press('Escape');
     await page
-      .getByLabel('Expiration date and time', { exact: true })
+      .getByLabel('Ablaufdatum und Uhrzeit', { exact: true })
       .fill(pickerDate(91 * 86400));
     await expect(page.getByRole('alert')).toContainText(
-      'between 1 minute and 90 days from now',
+      'zwischen 1 Minute und 90 Tage ab jetzt',
     );
     await expect(
-      page.getByLabel('Expiration date and time', { exact: true }),
+      page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true }),
     ).toHaveAttribute('aria-invalid', 'true');
     await page
-      .getByLabel('Expiration date and time', { exact: true })
+      .getByLabel('Ablaufdatum und Uhrzeit', { exact: true })
       .fill(pickerDate(90 * 86400));
     await expect(
-      page.getByLabel('Expiration date and time', { exact: true }),
+      page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true }),
     ).toHaveAttribute('aria-invalid', 'false');
     if (path === '/') {
       await page.screenshot({
@@ -49,7 +51,7 @@ for (const path of ['/', '/#/upload', '/#/request']) {
       });
       await page.setViewportSize({ width: 390, height: 844 });
       await expect(
-        page.getByLabel('Expiration date and time', { exact: true }),
+        page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true }),
       ).toBeVisible();
       expect(
         await page.evaluate(
@@ -61,9 +63,9 @@ for (const path of ['/', '/#/upload', '/#/request']) {
         fullPage: true,
       });
     }
-    await page.getByRole('radio', { name: 'One Day', exact: true }).check();
+    await page.getByRole('radio', { name: 'Ein Tag', exact: true }).check();
     await expect(
-      page.getByLabel('Expiration date and time', { exact: true }),
+      page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true }),
     ).not.toBeVisible();
   });
 }
@@ -75,16 +77,18 @@ test('creates a text secret with 90-day expiration', async ({ page }) => {
     message: '123e4567-e89b-42d3-a456-426614174000',
   });
   await page.goto('/');
-  await page.getByRole('radio', { name: 'Custom', exact: true }).check();
+  await page
+    .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+    .check();
   // Filling the field programmatically does not dismiss Firefox's native popup.
   await page.keyboard.press('Escape');
   await page
-    .getByLabel('Expiration date and time', { exact: true })
+    .getByLabel('Ablaufdatum und Uhrzeit', { exact: true })
     .fill(pickerDate(90 * 86400));
   await page.locator('textarea').fill('custom lifetime');
   await page.locator('button[type="submit"]').click();
   await expect(
-    page.getByRole('heading', { name: 'Secret stored securely' }),
+    page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
   ).toBeVisible();
   expect(api.getLastRequest('/secret')?.payload).toMatchObject({
     expiration: 7776000,
@@ -97,7 +101,7 @@ test('uploads a file with a custom default', async ({ page }) => {
   await api.mockUploadFile({ message: '123e4567-e89b-42d3-a456-426614174000' });
   await page.goto('/#/upload');
   await expect(
-    page.getByLabel('Expiration date and time', { exact: true }),
+    page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true }),
   ).toHaveValue(pickerDate(90 * 86400));
   await page.locator('input[type="file"]').setInputFiles({
     name: 'secret.txt',
@@ -106,7 +110,7 @@ test('uploads a file with a custom default', async ({ page }) => {
   });
   await page.locator('button[type="submit"]').click();
   await expect(
-    page.getByRole('heading', { name: 'Secret stored securely' }),
+    page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
   ).toBeVisible();
   expect(api.getLastRequest('/create/file')?.payload).toMatchObject({
     expiration: 7776000,
@@ -129,11 +133,11 @@ test('creates a request with custom expiration', async ({ page }) => {
   });
   await page.goto('/#/request');
   await expect(
-    page.getByLabel('Expiration date and time', { exact: true }),
+    page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true }),
   ).toHaveValue(pickerDate(90 * 86400));
   await page.locator('button[type="submit"]').click();
   await expect(
-    page.getByRole('heading', { name: 'Request created' }),
+    page.getByRole('heading', { name: 'Anfrage erstellt' }),
   ).toBeVisible();
   expect(expiration).toBe(7776000);
 });
@@ -142,8 +146,10 @@ test('renders forced custom durations', async ({ page }) => {
   const api = new MockAPI(page);
   await api.mockConfigEndpoint({ ...customConfig, FORCE_EXPIRATION: 7776000 });
   await page.goto('/');
-  await expect(page.getByText('Secret will expire in 90 days')).toBeVisible();
-  await expect(page.getByRole('radio', { name: 'Custom' })).not.toBeVisible();
+  await expect(page.getByText('Geheimnis läuft in 90 Tage ab')).toBeVisible();
+  await expect(
+    page.getByRole('radio', { name: 'Benutzerdefiniert' }),
+  ).not.toBeVisible();
 });
 
 test('hides custom expiration by default and filters presets outside bounds', async ({
@@ -152,15 +158,19 @@ test('hides custom expiration by default and filters presets outside bounds', as
   const api = new MockAPI(page);
   await api.mockConfigEndpoint({});
   await page.goto('/');
-  await expect(page.getByRole('radio', { name: 'Custom' })).not.toBeVisible();
+  await expect(
+    page.getByRole('radio', { name: 'Benutzerdefiniert' }),
+  ).not.toBeVisible();
   await api.mockConfigEndpoint({
     ...customConfig,
     MIN_EXPIRATION: 86400,
     DEFAULT_EXPIRY: 86400,
   });
   await page.reload();
-  await expect(page.getByRole('radio', { name: 'One Hour' })).not.toBeVisible();
-  await expect(page.getByRole('radio', { name: 'One Day' })).toBeChecked();
+  await expect(
+    page.getByRole('radio', { name: 'Eine Stunde' }),
+  ).not.toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Ein Tag' })).toBeChecked();
 });
 
 test('recalculates the remaining lifetime after time spent editing', async ({
@@ -172,17 +182,19 @@ test('recalculates the remaining lifetime after time spent editing', async ({
     message: '123e4567-e89b-42d3-a456-426614174000',
   });
   await page.goto('/');
-  await page.getByRole('radio', { name: 'Custom', exact: true }).check();
+  await page
+    .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+    .check();
   // Filling the field programmatically does not dismiss Firefox's native popup.
   await page.keyboard.press('Escape');
   await page
-    .getByLabel('Expiration date and time', { exact: true })
+    .getByLabel('Ablaufdatum und Uhrzeit', { exact: true })
     .fill(pickerDate(86400));
   await page.clock.setFixedTime(new Date(now.getTime() + 600000));
   await page.locator('textarea').fill('selected deadline');
   await page.locator('button[type="submit"]').click();
   await expect(
-    page.getByRole('heading', { name: 'Secret stored securely' }),
+    page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
   ).toBeVisible();
   expect(api.getLastRequest('/secret')?.payload).toMatchObject({
     expiration: 85800,
@@ -196,10 +208,12 @@ test('rejects past, empty, and too-soon dates', async ({ page }) => {
     message: '123e4567-e89b-42d3-a456-426614174000',
   });
   await page.goto('/');
-  await page.getByRole('radio', { name: 'Custom', exact: true }).check();
+  await page
+    .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+    .check();
   // Filling the field programmatically does not dismiss Firefox's native popup.
   await page.keyboard.press('Escape');
-  const picker = page.getByLabel('Expiration date and time', { exact: true });
+  const picker = page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true });
   for (const value of [pickerDate(-3600), pickerDate(0), '']) {
     await picker.fill(value);
     await expect(picker).toHaveAttribute('aria-invalid', 'true');
@@ -222,19 +236,23 @@ test('uses the browser local time zone', async ({ browser }) => {
       message: '123e4567-e89b-42d3-a456-426614174000',
     });
     await page.goto('/');
-    await page.getByRole('radio', { name: 'Custom', exact: true }).check();
+    await page
+      .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+      .check();
     // Filling the field programmatically does not dismiss Firefox's native popup.
     await page.keyboard.press('Escape');
     await page
-      .getByLabel('Expiration date and time', { exact: true })
+      .getByLabel('Ablaufdatum und Uhrzeit', { exact: true })
       .fill('2026-10-06T12:00');
     await expect(
-      page.getByText('Times are in your local time zone (Europe/Stockholm).'),
+      page.getByText(
+        'Die Zeiten gelten für deine lokale Zeitzone (Europe/Stockholm).',
+      ),
     ).toBeVisible();
     await page.locator('textarea').fill('local deadline');
     await page.locator('button[type="submit"]').click();
     await expect(
-      page.getByRole('heading', { name: 'Secret stored securely' }),
+      page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
     ).toBeVisible();
     expect(api.getLastRequest('/secret')?.payload).toMatchObject({
       expiration: 86400,
@@ -266,8 +284,11 @@ test('opens the date picker immediately when Custom is clicked, including repeat
     });
   });
   await page.goto('/');
-  const custom = page.getByRole('radio', { name: 'Custom', exact: true });
-  const picker = page.getByLabel('Expiration date and time', { exact: true });
+  const custom = page.getByRole('radio', {
+    name: 'Benutzerdefiniert',
+    exact: true,
+  });
+  const picker = page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true });
   await custom.click();
   await expect(picker).toBeFocused();
   await expect(picker).toHaveAttribute('data-picker-opened', '1');
@@ -289,9 +310,11 @@ test('focuses the date field when the browser has no programmatic picker', async
     });
   });
   await page.goto('/');
-  await page.getByRole('radio', { name: 'Custom', exact: true }).click();
+  await page
+    .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+    .click();
   await expect(
-    page.getByLabel('Expiration date and time', { exact: true }),
+    page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true }),
   ).toBeFocused();
 });
 
@@ -309,14 +332,17 @@ test('keeps narrow expiration policies usable while editing', async ({
     message: '123e4567-e89b-42d3-a456-426614174000',
   });
   await page.goto('/');
-  const duration = page.getByRole('combobox', { name: 'Custom', exact: true });
+  const duration = page.getByRole('combobox', {
+    name: 'Benutzerdefiniert',
+    exact: true,
+  });
   await expect(duration).toHaveValue('61');
   await duration.selectOption('60');
   await page.clock.setFixedTime(new Date(now.getTime() + 30000 + 30000));
   await page.locator('textarea').fill('narrow expiration policy');
   await page.locator('button[type="submit"]').click();
   await expect(
-    page.getByRole('heading', { name: 'Secret stored securely' }),
+    page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
   ).toBeVisible();
   expect(api.getLastRequest('/secret')?.payload).toMatchObject({
     expiration: 60,
@@ -332,17 +358,17 @@ test('keyboard selection of Custom submits the displayed deadline', async ({
     message: '123e4567-e89b-42d3-a456-426614174000',
   });
   await page.goto('/');
-  await page.getByRole('radio', { name: 'One Day', exact: true }).check();
-  await page.getByRole('radio', { name: 'One Week', exact: true }).focus();
+  await page.getByRole('radio', { name: 'Ein Tag', exact: true }).check();
+  await page.getByRole('radio', { name: 'Eine Woche', exact: true }).focus();
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('Escape');
-  const picker = page.getByLabel('Expiration date and time', { exact: true });
+  const picker = page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true });
   await expect(picker).toBeFocused();
   await expect(picker).toHaveValue(pickerDate(86400));
   await page.locator('textarea').fill('keyboard deadline');
   await page.locator('button[type="submit"]').click();
   await expect(
-    page.getByRole('heading', { name: 'Secret stored securely' }),
+    page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
   ).toBeVisible();
   expect(api.getLastRequest('/secret')?.payload).toMatchObject({
     expiration: 86400,
@@ -356,19 +382,23 @@ for (const path of ['/', '/#/upload', '/#/request']) {
     const api = new MockAPI(page);
     await api.mockConfigEndpoint(customConfig);
     await page.goto(path);
-    await page.getByRole('radio', { name: 'One Day', exact: true }).check();
+    await page.getByRole('radio', { name: 'Ein Tag', exact: true }).check();
     await page.clock.setFixedTime(new Date(now.getTime() + 2 * 3600000));
-    await page.getByRole('radio', { name: 'Custom', exact: true }).click();
+    await page
+      .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+      .click();
     await page.keyboard.press('Escape');
-    const picker = page.getByLabel('Expiration date and time', { exact: true });
+    const picker = page.getByLabel('Ablaufdatum und Uhrzeit', { exact: true });
     await expect(picker).toHaveValue(pickerDate(86400 + 7200));
     await expect(picker).toHaveAttribute('aria-invalid', 'false');
 
     // Once a custom deadline is chosen, presets and elapsed time must not reset it.
     await picker.fill(pickerDate(3 * 86400));
-    await page.getByRole('radio', { name: 'One Week', exact: true }).check();
+    await page.getByRole('radio', { name: 'Eine Woche', exact: true }).check();
     await page.clock.setFixedTime(new Date(now.getTime() + 3 * 3600000));
-    await page.getByRole('radio', { name: 'Custom', exact: true }).click();
+    await page
+      .getByRole('radio', { name: 'Benutzerdefiniert', exact: true })
+      .click();
     await page.keyboard.press('Escape');
     await expect(picker).toHaveValue(pickerDate(3 * 86400));
     await expect(picker).toHaveAttribute('aria-invalid', 'false');

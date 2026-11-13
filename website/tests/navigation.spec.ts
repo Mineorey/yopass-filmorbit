@@ -20,7 +20,9 @@ test.describe('Navigation', () => {
     await page.waitForLoadState('networkidle');
 
     // Should show the main features or create secret form
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
   });
 
   test('should navigate to upload page', async ({ page }) => {
@@ -29,7 +31,7 @@ test.describe('Navigation', () => {
     // Wait for the app to load
     await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('h2:has-text("Upload file")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Datei hochladen")')).toBeVisible();
   });
 
   test('should handle navigation via navbar if present', async ({ page }) => {
@@ -40,11 +42,13 @@ test.describe('Navigation', () => {
     if (await navbar.isVisible()) {
       // Test navigation links if they exist
       const uploadLink = page.locator(
-        'a[href*="upload"], button:has-text("Upload")',
+        'a[href*="upload"], button:has-text("Hochladen")',
       );
       if (await uploadLink.isVisible()) {
         await uploadLink.click();
-        await expect(page.locator('h2:has-text("Upload file")')).toBeVisible();
+        await expect(
+          page.locator('h2:has-text("Datei hochladen")'),
+        ).toBeVisible();
       }
     }
   });
@@ -66,7 +70,9 @@ test.describe('Navigation', () => {
     await page.goto(`/#/secret/${secretId}/${password}`);
 
     // Should show prefetch or decryption screen
-    await expect(page.locator('h2:has-text("Secure Message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Sichere Nachricht")'),
+    ).toBeVisible();
   });
 
   test('should handle direct URL navigation to file view', async ({ page }) => {
@@ -84,7 +90,9 @@ test.describe('Navigation', () => {
     await page.goto(`/#/f/${fileId}/${password}`);
 
     // Should show prefetch or decryption screen
-    await expect(page.locator('h2:has-text("Secure Message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Sichere Nachricht")'),
+    ).toBeVisible();
   });
 
   test('should handle invalid URLs gracefully', async ({ page }) => {
@@ -111,21 +119,25 @@ test.describe('Navigation', () => {
     // Start at home
     await page.goto('/#/');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
 
     // Navigate to upload
     await page.goto('/#/upload');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('h2:has-text("Upload file")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Datei hochladen")')).toBeVisible();
 
     // Go back
     await page.goBack();
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
 
     // Go forward
     await page.goForward();
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('h2:has-text("Upload file")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Datei hochladen")')).toBeVisible();
   });
 });

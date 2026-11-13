@@ -18,7 +18,7 @@ for (const modifier of ['Control', 'Meta']) {
     await page.locator('input[value="86400"]').check();
     await page.locator('#secret').press(`${modifier}+Enter`);
     await expect(
-      page.getByRole('heading', { name: 'Secret stored securely' }),
+      page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
     ).toBeVisible();
     const requests = api.getRequestsByUrl('/secret');
     expect(requests).toHaveLength(1);
@@ -58,11 +58,13 @@ test('shortcut works from the custom password field', async ({ page }) => {
   const api = new MockAPI(page);
   await api.mockCreateSecret(mockResponses.secretCreated);
   await page.locator('#secret').fill('Secret with a custom password');
-  await page.getByText('Generate decryption key', { exact: true }).click();
+  await page
+    .getByText('Entschlüsselungsschlüssel generieren', { exact: true })
+    .click();
   await page.locator('#customPassword').fill('custom-key');
   await page.locator('#customPassword').press('Control+Enter');
   await expect(
-    page.getByRole('heading', { name: 'Secret stored securely' }),
+    page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
   ).toBeVisible();
   await expect(page.locator('code').last()).toHaveText('custom-key');
   expect(api.getRequestsByUrl('/secret')).toHaveLength(1);
@@ -107,7 +109,7 @@ test('shortcut does not create another secret while submission is pending', asyn
   await expect(page.locator('#secret')).toHaveValue('Only submit once');
   finishRequest();
   await expect(
-    page.getByRole('heading', { name: 'Secret stored securely' }),
+    page.getByRole('heading', { name: 'Geheimnis sicher gespeichert' }),
   ).toBeVisible();
   expect(requestCount).toBe(1);
 });
