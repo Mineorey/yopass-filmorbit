@@ -34,6 +34,7 @@ export interface Config {
   SECRET_REQUESTS_DRAINING: boolean;
   READ_RECEIPTS: boolean;
   ARGON2: boolean;
+  ACCESS_PASSWORD_REQUIRED: boolean;
 }
 
 export const defaultConfig: Config = {
@@ -50,8 +51,8 @@ export const defaultConfig: Config = {
   FORCE_ONETIME_SECRETS: false,
   DEFAULT_ONETIME_SECRETS: true,
   DEFAULT_READ_RECEIPT: false,
-  THEME_LIGHT: 'emerald',
-  THEME_DARK: 'dim',
+  THEME_LIGHT: 'filmorbit',
+  THEME_DARK: 'filmorbit',
   HIDE_APP_NAME: false,
   OIDC_ENABLED: false,
   REQUIRE_AUTH: false,
@@ -60,6 +61,7 @@ export const defaultConfig: Config = {
   SECRET_REQUESTS_DRAINING: false,
   READ_RECEIPTS: false,
   ARGON2: false,
+  ACCESS_PASSWORD_REQUIRED: false,
 };
 
 // Type-coercion helpers for the untrusted /config response: each returns the
@@ -185,5 +187,6 @@ export function parseConfig(value: unknown): Config {
     SECRET_REQUESTS_DRAINING: asBool(data.SECRET_REQUESTS_DRAINING, false),
     READ_RECEIPTS: asBool(data.READ_RECEIPTS, false),
     ARGON2: asBool(data.ARGON2, false),
+    ACCESS_PASSWORD_REQUIRED: asBool(data.ACCESS_PASSWORD_REQUIRED, false),
   };
 }

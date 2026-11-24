@@ -171,6 +171,8 @@ func main() {
 		MaxExpiration:         expirationSeconds(viper.GetString("max-expiration")),
 		DefaultExpiry:         viper.GetString("default-expiry"),
 		ForceExpiration:       viper.GetString("force-expiration"),
+
+		AccessPassword: viper.GetString("access-password"),
 	}
 	// Start cleanup goroutine for file store (disk or S3)
 	cleanupCtx, cleanupCancel := context.WithCancel(context.Background())

@@ -1,0 +1,21 @@
+# Variante B: Caddy läuft selbst als Docker-Container.
+#
+# Aufruf (immer beide Dateien angeben):
+#   docker compose -f docker-compose.yml -f docker-compose.caddy-network.yml up -d
+#
+# Yopass tritt dem Docker-Netz von Caddy bei und veröffentlicht keinen Port
+# mehr auf dem Server. Caddy erreicht ihn dann unter yopass:1337.
+# CADDY_NETWORK in .env auf den Netznamen von Caddy setzen (siehe README.md).
+# Benötigt Docker Compose 2.24 oder neuer (wegen !reset).
+
+services:
+  yopass:
+    ports: !reset []
+    networks:
+      - safe
+      - caddy
+
+networks:
+  caddy:
+    name: ${CADDY_NETWORK:?CADDY_NETWORK in .env setzen}
+    external: true

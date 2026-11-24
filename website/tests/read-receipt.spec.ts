@@ -5,9 +5,10 @@ import { testSecrets } from './helpers/test-data';
 const SECRET_ID = 'read-receipt-secret-id';
 const RECEIPT_TOKEN = 'receipt-token-abc123';
 
-const RECEIPT_TOGGLE = 'label:has-text("Read receipt") input[type="checkbox"]';
+const RECEIPT_TOGGLE =
+  'label:has-text("Lesebestätigung") input[type="checkbox"]';
 const RECEIPT_EXPIRED =
-  'The receipt has expired — it can no longer be checked whether the secret was opened';
+  'Die Bestätigung ist abgelaufen — es kann nicht mehr geprüft werden, ob das Geheimnis geöffnet wurde';
 
 test.describe('Read receipts', () => {
   let mockAPI: MockAPI;
@@ -25,7 +26,9 @@ test.describe('Read receipts', () => {
 
   test('toggle is hidden without the licensed feature', async ({ page }) => {
     await setup(page, false);
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
     await expect(page.locator(RECEIPT_TOGGLE)).not.toBeVisible();
   });
 
@@ -44,19 +47,19 @@ test.describe('Read receipts', () => {
     await mockAPI.mockCreateSecret({ message: SECRET_ID });
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
     const lastRequest = mockAPI.getLastRequest('/secret');
     expect(lastRequest?.payload).toMatchObject({ receipt: false });
 
     // No receipt panel on the result page.
-    await expect(page.locator('text=Read receipt')).not.toBeVisible();
+    await expect(page.locator('text=Lesebestätigung')).not.toBeVisible();
   });
 
   test('shows a pending receipt that flips to viewed', async ({ page }) => {
@@ -78,14 +81,14 @@ test.describe('Read receipts', () => {
     }));
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.check(RECEIPT_TOGGLE);
     await page.click('button[type="submit"]');
 
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // The payload requested a receipt.
@@ -98,13 +101,13 @@ test.describe('Read receipts', () => {
     ).toBeVisible();
     await expect(
       page.locator('[data-testid="receipt-status-pending"]'),
-    ).toContainText('Not opened yet');
+    ).toContainText('Noch nicht geöffnet');
 
-    // The status request authenticates with the receipt token.
-    const receiptRequest = mockAPI.getLastRequest('/receipt');
-    expect(receiptRequest?.payload).toMatchObject({
-      receiptToken: RECEIPT_TOKEN,
-    });
+    // The status request authenticates with the receipt token. The pending
+    // state can render before the first poll, so wait for the request.
+    await expect
+      .poll(() => mockAPI.getLastRequest('/receipt')?.payload)
+      .toMatchObject({ receiptToken: RECEIPT_TOKEN });
 
     // Flip the backend state to viewed and refresh manually.
     receipt = {
@@ -119,7 +122,7 @@ test.describe('Read receipts', () => {
     ).toBeVisible();
     await expect(
       page.locator('[data-testid="receipt-status-viewed"]'),
-    ).toContainText('Opened');
+    ).toContainText('Geöffnet');
 
     // Once viewed, the refresh button disappears and polling stops.
     await expect(
@@ -139,7 +142,7 @@ test.describe('Read receipts', () => {
     }));
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.check(RECEIPT_TOGGLE);
@@ -175,13 +178,13 @@ test.describe('Receipts page', () => {
       receipt_token: RECEIPT_TOKEN,
     });
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.check(RECEIPT_TOGGLE);
     await page.click('button[type="submit"]');
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
   }
 
@@ -195,8 +198,12 @@ test.describe('Receipts page', () => {
   test('shows an empty state without stored receipts', async ({ page }) => {
     await setup(page, true);
     await page.click('header a[href="#/receipts"]');
-    await expect(page.locator('h2:has-text("Read receipts")')).toBeVisible();
-    await expect(page.locator('text=No read receipts yet')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Lesebestätigungen")'),
+    ).toBeVisible();
+    await expect(
+      page.locator('text=Noch keine Lesebestätigungen'),
+    ).toBeVisible();
   });
 
   test('lists a created receipt and survives navigating away', async ({
@@ -218,13 +225,13 @@ test.describe('Receipts page', () => {
     await createSecretWithReceipt(page);
 
     // Navigate away from the result page, then to the Receipts page.
-    await page.click('text=Create another secret');
+    await page.click('text=Ein weiteres Geheimnis erstellen');
     await page.click('header a[href="#/receipts"]');
 
     const item = page.locator('[data-testid="receipt-list-item"]');
     await expect(item).toHaveCount(1);
     await expect(item).toContainText(SECRET_ID);
-    await expect(item.locator('.badge')).toContainText('Not opened');
+    await expect(item.locator('.badge')).toContainText('Nicht geöffnet');
 
     // The status request authenticates with the stored receipt token.
     const receiptRequest = mockAPI.getLastRequest('/receipt');
@@ -240,8 +247,8 @@ test.describe('Receipts page', () => {
     };
     await page.reload();
     await page.waitForLoadState('networkidle');
-    await expect(item.locator('.badge')).toContainText('Opened');
-    await expect(item).toContainText('Opened');
+    await expect(item.locator('.badge')).toContainText('Geöffnet');
+    await expect(item).toContainText('Geöffnet');
   });
 
   test('keeps the viewed state after the receipt expires on the server', async ({
@@ -275,7 +282,7 @@ test.describe('Receipts page', () => {
     receiptGone = true;
     await page.click('header a[href="#/receipts"]');
     const item = page.locator('[data-testid="receipt-list-item"]');
-    await expect(item.locator('.badge')).toContainText('Opened');
+    await expect(item.locator('.badge')).toContainText('Geöffnet');
   });
 
   test('does not claim an expired receipt was never opened', async ({
@@ -309,14 +316,14 @@ test.describe('Receipts page', () => {
     receiptGone = true;
     await page.click('header a[href="#/receipts"]');
     const item = page.locator('[data-testid="receipt-list-item"]');
-    await expect(item.locator('.badge')).toContainText('Expired');
+    await expect(item.locator('.badge')).toContainText('Abgelaufen');
     await expect(item).toContainText(RECEIPT_EXPIRED);
 
     // Past the local deadline the list resolves the receipt without asking
     // the server, and must not claim more than it knows either.
     await page.clock.setFixedTime(Date.now() + 3601 * 1000);
     await page.reload();
-    await expect(item.locator('.badge')).toContainText('Expired');
+    await expect(item.locator('.badge')).toContainText('Abgelaufen');
     await expect(item).toContainText(RECEIPT_EXPIRED);
   });
 
@@ -387,7 +394,7 @@ test.describe('Receipts page', () => {
     await page.click('button[type="submit"]');
 
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // The upload sent the receipt header.
@@ -404,7 +411,7 @@ test.describe('Receipts page', () => {
     await page.waitForURL(/receipts/);
     const item = page.locator('[data-testid="receipt-list-item"]');
     await expect(item).toHaveCount(1);
-    await expect(item).toContainText('File');
+    await expect(item).toContainText('Datei');
   });
 
   test('removes a receipt after confirmation', async ({ page }) => {
@@ -427,10 +434,12 @@ test.describe('Receipts page', () => {
       1,
     );
     await page.click(
-      '[data-testid="receipt-list-item"] button:has-text("Remove")',
+      '[data-testid="receipt-list-item"] button:has-text("Entfernen")',
     );
-    await page.click('.modal button:has-text("Remove")');
+    await page.click('.modal button:has-text("Entfernen")');
 
-    await expect(page.locator('text=No read receipts yet')).toBeVisible();
+    await expect(
+      page.locator('text=Noch keine Lesebestätigungen'),
+    ).toBeVisible();
   });
 });

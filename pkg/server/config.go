@@ -5,12 +5,14 @@ import (
 	"net/http"
 )
 
-// DefaultThemeLight and DefaultThemeDark are the built-in DaisyUI themes used
-// when no valid license overrides them. cmd/yopass-server uses them as the
+// DefaultThemeLight and DefaultThemeDark are the DaisyUI themes used
+// when no valid license overrides them (FilmOrbit fork: its own light-only
+// "filmorbit" theme from website/src/shared/styles/filmorbit.css for both modes).
+// cmd/yopass-server uses them as the
 // defaults for the --theme-light and --theme-dark flags.
 const (
-	DefaultThemeLight = "emerald"
-	DefaultThemeDark  = "dim"
+	DefaultThemeLight = "filmorbit"
+	DefaultThemeDark  = "filmorbit"
 )
 
 func (y *Server) configHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +65,7 @@ func (y *Server) configHandler(w http.ResponseWriter, r *http.Request) {
 	config["OIDC_ENABLED"] = y.oidcEnabled()
 	config["REQUIRE_AUTH"] = y.oidcEnabled() && (y.RequireAuth || y.RequireAuthAll)
 	config["REQUIRE_AUTH_ALL"] = y.oidcEnabled() && y.RequireAuthAll
+	config["ACCESS_PASSWORD_REQUIRED"] = y.accessEnabled()
 	// Read once: the license can expire between two calls and set both flags.
 	requestsEnabled := y.secretRequestsEnabled()
 	config["SECRET_REQUESTS"] = requestsEnabled

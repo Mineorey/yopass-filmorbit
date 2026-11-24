@@ -79,6 +79,22 @@ function Result({
       >
         {t('result.subtitle')}
       </p>
+      {/* FilmOrbit Safe: tell customers which link to send. */}
+      <div
+        className="mb-6 p-5 rounded-lg border border-primary/40 bg-primary/10 animate-result-enter"
+        style={{ animationDelay: '75ms' }}
+      >
+        <div className="font-semibold text-base mb-1 text-base-content">
+          {t('filmorbit.nextTitle')}
+        </div>
+        <p className="text-sm text-base-content/80">
+          {customPassword
+            ? t('filmorbit.nextCustomPassword')
+            : config.DISABLE_ONE_CLICK_LINK
+              ? t('filmorbit.nextSeparate')
+              : t('filmorbit.nextOneClick')}
+        </p>
+      </div>
       {oneTime && (
         <div
           className="alert alert-warning mb-6 shadow-sm animate-result-enter"

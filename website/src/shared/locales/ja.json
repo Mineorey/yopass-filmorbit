@@ -103,20 +103,23 @@
     "timezone": "時刻はローカルタイムゾーン（{{timezone}}）で表示されます。"
   },
   "features": {
-    "title": "シークレットを安全かつ簡単に共有",
-    "subtitle": "Yopassは、メールやチャットに平文のパスワードが残るのを減らすために作られました。シークレットを暗号化し、1回だけ閲覧できる短期間有効なリンクを生成します。",
-    "featureEndToEndTitle": "エンドツーエンド暗号化",
-    "featureEndToEndText": "暗号化と復号はブラウザ内でローカルに行われます。キーがYopassに保存されることはありません。",
-    "featureSelfDestructionTitle": "自動削除",
-    "featureSelfDestructionText": "暗号化されたメッセージには有効期限があり、期限切れ後に自動的に削除されます。",
-    "featureOneTimeTitle": "1回限りのダウンロード",
-    "featureOneTimeText": "暗号化されたメッセージは1回しかダウンロードできないため、シークレットをのぞき見されるリスクを減らせます。",
-    "featureSimpleSharingTitle": "簡単な共有",
-    "featureSimpleSharingText": "Yopassは、暗号化されたファイルやメッセージごとに固有のワンクリックリンクを生成します。復号パスワードは別の手段で送ることもできます。",
-    "featureNoAccountsTitle": "アカウント不要",
-    "featureNoAccountsText": "共有は素早く簡単に行えるべきです。データベースに保存されるのは、暗号化されたシークレットだけです。",
-    "featureOpenSourceTitle": "オープンソース",
-    "featureOpenSourceText": "Yopassの暗号化の仕組みはオープンソースで公開されており、透明性が高く、監査や機能改善の提案も行えます。"
+    "title": "Send access credentials to FilmOrbit securely",
+    "subtitle": "This keeps passwords and API keys out of emails and chats. In three steps:",
+    "step1Title": "Enter",
+    "step1Text": "Enter your access credentials. They are encrypted right in your browser.",
+    "step2Title": "Send the link",
+    "step2Text": "Send the link to FilmOrbit. The key is only part of the link, not stored on our server.",
+    "step3Title": "Gets deleted",
+    "step3Text": "The secret is deleted after it is opened for the first time, or at the latest when the chosen time runs out.",
+    "faqTitle": "Frequently asked questions",
+    "faq1Question": "Who can read my data?",
+    "faq1Answer": "Only someone with the complete link – that is, us, once you send it to us. The server only holds it in encrypted form.",
+    "faq2Question": "What happens after it expires?",
+    "faq2Answer": "Once the chosen time is up, the secret is deleted automatically. The link stops working.",
+    "faq3Question": "What if I lose the link?",
+    "faq3Answer": "Just create a new one. The old link keeps working until it has been opened once or the time runs out. If it may have fallen into the wrong hands, change the credentials.",
+    "faq4Question": "Can I send files as well?",
+    "faq4Answer": "Yes, up to 1 MB, for example key files or certificates. FilmOrbit Safe is mainly meant for text such as passwords and API keys."
   },
   "header": {
     "buttonUpload": "アップロード",
@@ -137,6 +140,15 @@
   "readOnly": {
     "title": "シークレットの取得",
     "description": "このインスタンスはシークレットの取得専用に設定されています。シークレットを表示するには、完全なリンクが必要です。"
+  },
+  "access": {
+    "title": "Access for clients",
+    "description": "This page is for FilmOrbit clients. You will receive the access password from us.",
+    "passwordLabel": "Access password",
+    "submit": "Continue",
+    "invalid": "The password is incorrect. Please try again.",
+    "rateLimited": "Too many attempts. Please wait a few minutes.",
+    "error": "Connection failed. Please try again in a moment."
   },
   "accessibility": {
     "skipToContent": "メインコンテンツへスキップ",
@@ -281,5 +293,22 @@
     "language": "言語",
     "theme": "テーマ",
     "darkModeToggle": "ダークモード"
+  },
+  "filmorbit": {
+    "modeSwitchLabel": "What do you want to send?",
+    "modeText": "Text",
+    "modeFile": "File",
+    "modeHint": "Text: passwords, API keys, credentials · File: e.g. a key file or certificate (max. {{size}})",
+    "modeHintNoSize": "Text: passwords, API keys, credentials · File: e.g. a key file or certificate",
+    "introText": "Enter the credentials you want to send us. They are encrypted in your browser before they are sent.",
+    "introFile": "Choose the file you want to send us, e.g. a key file or certificate. It is encrypted in your browser before it is uploaded.",
+    "helpExpiration": "After this time the link stops working, even if nobody has opened it yet.",
+    "helpOneTime": "On: the secret is deleted right after it is first opened. Off: it can be opened several times until it expires.",
+    "helpGenerateKey": "On (simplest): the key is generated automatically and is part of the link, so you only send one link. Off: you set your own password and send it separately from the link through another channel (e.g. link by email, password by phone or SMS). More secure, but more effort.",
+    "helpCustomPassword": "We need this password to open the secret. Do not send it together with the link; use another channel, e.g. phone or SMS.",
+    "nextTitle": "What now?",
+    "nextOneClick": "Send us the one-click link, e.g. by email. That is all: the key is already part of the link.",
+    "nextSeparate": "Send us the short link and the decryption key separately through two different channels, e.g. the link by email and the key by phone or SMS.",
+    "nextCustomPassword": "Send us the short link, e.g. by email. Tell us your password separately through another channel, e.g. by phone or SMS."
   }
 }

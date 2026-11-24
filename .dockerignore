@@ -6,3 +6,4 @@ website/dist
 .claude
 .agents
 .impeccable
+**/.env

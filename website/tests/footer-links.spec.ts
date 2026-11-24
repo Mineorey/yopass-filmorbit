@@ -24,9 +24,9 @@ test.describe('Footer Links', () => {
     const footer = page.locator('footer');
     await expect(footer).toBeVisible();
     await expect(
-      footer.locator('a:has-text("Privacy Notice")'),
+      footer.locator('a:has-text("Datenschutzerklärung")'),
     ).not.toBeVisible();
-    await expect(footer.locator('a:has-text("Imprint")')).not.toBeVisible();
+    await expect(footer.locator('a:has-text("Impressum")')).not.toBeVisible();
   });
 
   test('should show only privacy notice link when configured', async ({
@@ -50,7 +50,7 @@ test.describe('Footer Links', () => {
     await page.waitForLoadState('networkidle');
 
     // Check that privacy notice link is present
-    const privacyLink = page.locator('a:has-text("Privacy Notice")');
+    const privacyLink = page.locator('a:has-text("Datenschutzerklärung")');
     await expect(privacyLink).toBeVisible();
     await expect(privacyLink).toHaveAttribute(
       'href',
@@ -60,11 +60,11 @@ test.describe('Footer Links', () => {
     await expect(privacyLink).toHaveAttribute('rel', 'noopener noreferrer');
 
     // Check that imprint link is not present
-    await expect(page.locator('a:has-text("Imprint")')).not.toBeVisible();
+    await expect(page.locator('a:has-text("Impressum")')).not.toBeVisible();
 
-    // Check that the text contains bullet separator and created by text
+    // The links are followed by a bullet separator and the copyright
     const footerText = page.locator('footer div.flex.flex-wrap');
-    await expect(footerText).toContainText('Privacy Notice•© 2014');
+    await expect(footerText).toContainText('Datenschutzerklärung•© ');
   });
 
   test('should show only imprint link when configured', async ({ page }) => {
@@ -86,7 +86,7 @@ test.describe('Footer Links', () => {
     await page.waitForLoadState('networkidle');
 
     // Check that imprint link is present
-    const imprintLink = page.locator('a:has-text("Imprint")');
+    const imprintLink = page.locator('a:has-text("Impressum")');
     await expect(imprintLink).toBeVisible();
     await expect(imprintLink).toHaveAttribute(
       'href',
@@ -97,12 +97,12 @@ test.describe('Footer Links', () => {
 
     // Check that privacy notice link is not present
     await expect(
-      page.locator('a:has-text("Privacy Notice")'),
+      page.locator('a:has-text("Datenschutzerklärung")'),
     ).not.toBeVisible();
 
-    // Check that the text contains bullet separator and created by text
+    // The links are followed by a bullet separator and the copyright
     const footerText = page.locator('footer div.flex.flex-wrap');
-    await expect(footerText).toContainText('Imprint•© 2014');
+    await expect(footerText).toContainText('Impressum•© ');
   });
 
   test('should show both privacy notice and imprint links when both are configured', async ({
@@ -127,8 +127,8 @@ test.describe('Footer Links', () => {
     await page.waitForLoadState('networkidle');
 
     // Check that both links are present
-    const privacyLink = page.locator('a:has-text("Privacy Notice")');
-    const imprintLink = page.locator('a:has-text("Imprint")');
+    const privacyLink = page.locator('a:has-text("Datenschutzerklärung")');
+    const imprintLink = page.locator('a:has-text("Impressum")');
 
     await expect(privacyLink).toBeVisible();
     await expect(privacyLink).toHaveAttribute(
@@ -146,7 +146,7 @@ test.describe('Footer Links', () => {
 
     // Check that both links are on the same line with bullet separators
     const footerText = page.locator('footer div.flex.flex-wrap');
-    await expect(footerText).toContainText('Privacy Notice•Imprint•© 2014');
+    await expect(footerText).toContainText('Datenschutzerklärung•Impressum•© ');
   });
 
   test('should show footer links on all pages when configured', async ({
@@ -170,14 +170,18 @@ test.describe('Footer Links', () => {
     // Test on home page
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('a:has-text("Privacy Notice")')).toBeVisible();
-    await expect(page.locator('a:has-text("Imprint")')).toBeVisible();
+    await expect(
+      page.locator('a:has-text("Datenschutzerklärung")'),
+    ).toBeVisible();
+    await expect(page.locator('a:has-text("Impressum")')).toBeVisible();
 
     // Test on upload page
     await page.goto('/#/upload');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('a:has-text("Privacy Notice")')).toBeVisible();
-    await expect(page.locator('a:has-text("Imprint")')).toBeVisible();
+    await expect(
+      page.locator('a:has-text("Datenschutzerklärung")'),
+    ).toBeVisible();
+    await expect(page.locator('a:has-text("Impressum")')).toBeVisible();
   });
 
   test('should handle empty string URLs same as missing URLs', async ({
@@ -203,12 +207,12 @@ test.describe('Footer Links', () => {
 
     // Check that links are not shown when URLs are empty strings
     await expect(
-      page.locator('a:has-text("Privacy Notice")'),
+      page.locator('a:has-text("Datenschutzerklärung")'),
     ).not.toBeVisible();
-    await expect(page.locator('a:has-text("Imprint")')).not.toBeVisible();
+    await expect(page.locator('a:has-text("Impressum")')).not.toBeVisible();
   });
 
-  test('should show default Yopass copyright when APP_NAME is not set', async ({
+  test('should show the FilmOrbit copyright and the Yopass attribution', async ({
     page,
   }) => {
     await page.route('**/config', async route => {
@@ -230,10 +234,16 @@ test.describe('Footer Links', () => {
     const currentYear = await page.evaluate(() =>
       new Date().getFullYear().toString(),
     );
-    await expect(footer).toContainText(`© 2014–${currentYear}`);
-    await expect(footer.locator('a[href="https://yopass.se"]')).toBeVisible();
-    await expect(footer.locator('a[href="https://yopass.se"]')).toHaveText(
-      'Yopass',
+    await expect(footer).toContainText(`© ${currentYear} FilmOrbit`);
+    await expect(footer.locator('a[href="https://filmorbit.de"]')).toHaveText(
+      'FilmOrbit',
     );
+    // Apache 2.0 attribution for the upstream project.
+    const attribution = footer.locator(
+      'a[href="https://github.com/jhaals/yopass"]',
+    );
+    await expect(attribution).toHaveText('basiert auf Yopass (Open Source)');
+    await expect(attribution).toHaveAttribute('target', '_blank');
+    await expect(footer.locator('a[href="https://yopass.se"]')).toHaveCount(0);
   });
 });

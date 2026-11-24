@@ -136,18 +136,20 @@ test.describe('File Download', () => {
     await page.goto(`/#/f/${fileId}/${password}`);
 
     // Wait for the file UI to appear
-    await expect(page.locator('h2:has-text("File Downloaded")')).toBeVisible({
+    await expect(
+      page.locator('h2:has-text("Datei heruntergeladen")'),
+    ).toBeVisible({
       timeout: 10000,
     });
 
     // Check for the subtitle message
     await expect(
-      page.locator('text=Your file has been decrypted and downloaded'),
+      page.locator('text=Deine Datei wurde entschlüsselt und heruntergeladen'),
     ).toBeVisible();
 
     // Check that the filename is displayed
     await expect(
-      page.locator(`text=File downloaded: ${originalFilename}`),
+      page.locator(`text=Datei heruntergeladen: ${originalFilename}`),
     ).toBeVisible();
   });
 
@@ -250,19 +252,22 @@ test.describe('File Download', () => {
 
     // Should show decryption key input
     await expect(
-      page.locator('h2:has-text("Enter decryption key")'),
+      page.locator('h2:has-text("Entschlüsselungsschlüssel eingeben")'),
     ).toBeVisible();
     await expect(
-      page.locator('input[placeholder="Decryption key"]'),
+      page.locator('input[placeholder="Entschlüsselungsschlüssel"]'),
     ).toBeVisible();
     await expect(
-      page.locator('button:has-text("DECRYPT SECRET")'),
+      page.locator('button:has-text("GEHEIMNIS ENTSCHLÜSSELN")'),
     ).toBeVisible();
 
     // Enter correct password
     const downloadPromise = page.waitForEvent('download');
-    await page.fill('input[placeholder="Decryption key"]', correctPassword);
-    await page.click('button:has-text("DECRYPT SECRET")');
+    await page.fill(
+      'input[placeholder="Entschlüsselungsschlüssel"]',
+      correctPassword,
+    );
+    await page.click('button:has-text("GEHEIMNIS ENTSCHLÜSSELN")');
 
     // Should download the file
     const download = await downloadPromise;
@@ -333,15 +338,19 @@ test.describe('File Download', () => {
     await page.goto(`/#/f/${fileId}/${password}`);
 
     // Download-failed screen, not the wrong-key flow.
-    await expect(page.locator('h2:has-text("Download failed")')).toBeVisible();
-    await expect(page.locator('button:has-text("Try again")')).toBeVisible();
     await expect(
-      page.locator('h2:has-text("Enter decryption key")'),
+      page.locator('h2:has-text("Download fehlgeschlagen")'),
+    ).toBeVisible();
+    await expect(
+      page.locator('button:has-text("Erneut versuchen")'),
+    ).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Entschlüsselungsschlüssel eingeben")'),
     ).not.toBeVisible();
 
     // Retrying re-runs the download with the already-entered key and succeeds.
     const downloadPromise = page.waitForEvent('download');
-    await page.click('button:has-text("Try again")');
+    await page.click('button:has-text("Erneut versuchen")');
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe(originalFilename);
   });
@@ -376,18 +385,20 @@ test.describe('File Download', () => {
     await downloadPromise;
 
     // Wait for UI
-    await expect(page.locator('h2:has-text("File Downloaded")')).toBeVisible({
+    await expect(
+      page.locator('h2:has-text("Datei heruntergeladen")'),
+    ).toBeVisible({
       timeout: 10000,
     });
 
     // Should NOT show copy to clipboard button
     await expect(
-      page.locator('button:has-text("Copy to Clipboard")'),
+      page.locator('button:has-text("In Zwischenablage kopieren")'),
     ).not.toBeVisible();
 
     // Should NOT show QR code button
     await expect(
-      page.locator('button:has-text("Show QR Code")'),
+      page.locator('button:has-text("QR-Code anzeigen")'),
     ).not.toBeVisible();
   });
 
@@ -419,23 +430,27 @@ test.describe('File Download', () => {
     await page.goto(`/#/f/${fileId}/${password}`);
 
     // Should show prefetch screen first
-    await expect(page.locator('h2:has-text("Secure Message")')).toBeVisible();
     await expect(
-      page.locator('button:has-text("Reveal Secure Message")'),
+      page.locator('h2:has-text("Sichere Nachricht")'),
+    ).toBeVisible();
+    await expect(
+      page.locator('button:has-text("Sichere Nachricht anzeigen")'),
     ).toBeVisible();
 
     // Set up download listener
     const downloadPromise = page.waitForEvent('download');
 
     // Click reveal button
-    await page.click('button:has-text("Reveal Secure Message")');
+    await page.click('button:has-text("Sichere Nachricht anzeigen")');
 
     // Should download the file
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe(originalFilename);
 
     // Should show file UI
-    await expect(page.locator('h2:has-text("File Downloaded")')).toBeVisible({
+    await expect(
+      page.locator('h2:has-text("Datei heruntergeladen")'),
+    ).toBeVisible({
       timeout: 10000,
     });
   });
@@ -466,7 +481,7 @@ test.describe('File Download', () => {
 
     // Should show result page
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Get the generated URL
@@ -504,7 +519,7 @@ test.describe('File Download', () => {
     await page.goto(`/#/f/${fileId}/${generatedPassword}`);
 
     // Click reveal for one-time download
-    await page.click('button:has-text("Reveal Secure Message")');
+    await page.click('button:has-text("Sichere Nachricht anzeigen")');
 
     // Wait for download
     const download = await downloadPromise;
@@ -513,11 +528,13 @@ test.describe('File Download', () => {
     expect(download.suggestedFilename()).toBe(uploadedFilename);
 
     // Verify UI shows correctly
-    await expect(page.locator('h2:has-text("File Downloaded")')).toBeVisible({
+    await expect(
+      page.locator('h2:has-text("Datei heruntergeladen")'),
+    ).toBeVisible({
       timeout: 10000,
     });
     await expect(
-      page.locator(`text=File downloaded: ${uploadedFilename}`),
+      page.locator(`text=Datei heruntergeladen: ${uploadedFilename}`),
     ).toBeVisible();
   });
 
@@ -599,7 +616,7 @@ test.describe('File Download', () => {
 
     // Verify UI displays the filename correctly
     await expect(
-      page.locator(`text=File downloaded: ${specialFilename}`),
+      page.locator(`text=Datei heruntergeladen: ${specialFilename}`),
     ).toBeVisible();
   });
 });

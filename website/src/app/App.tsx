@@ -9,6 +9,11 @@ import Prefetcher from '@features/display-secret/Prefetcher';
 import StreamingUpload from '@features/StreamingUpload';
 import ReadOnlyLanding from '@features/ReadOnlyLanding';
 import LoginRequired from '@features/LoginRequired';
+import AccessGate from '@features/AccessGate';
+import ModeSwitch, { ModeSwitchContext } from '@features/ModeSwitch';
+import { useAccess } from '@shared/hooks/useAccess';
+import { SpinnerIcon } from '@shared/components/icons';
+import FilmOrbitFooter from '@shared/components/FilmOrbitFooter';
 import CreateRequest from '@features/request-secret/CreateRequest';
 import RequestList from '@features/request-secret/RequestList';
 import RevealSecretModal, {
@@ -24,8 +29,6 @@ export default function App() {
   const {
     DISABLE_UPLOAD,
     READ_ONLY,
-    PRIVACY_NOTICE_URL,
-    IMPRINT_URL,
     REQUIRE_AUTH,
     REQUIRE_AUTH_ALL,
     SECRET_REQUESTS,
@@ -33,7 +36,11 @@ export default function App() {
     READ_RECEIPTS,
   } = useConfig();
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const access = useAccess();
   const { t } = useTranslation();
+
+  // Number of mounted create forms asking for the text/file mode switch.
+  const [modeSwitchUsers, setModeSwitchUsers] = useState(0);
 
   // The route can unmount while a one-time fetch is pending. Keep every
   // collected answer here until explicitly closed, without persisting content.
@@ -60,6 +67,20 @@ export default function App() {
 
   // Whether creation pages must show the login gate instead of their content.
   const needsLogin = REQUIRE_AUTH && !authLoading && !isAuthenticated;
+  // Whether creation pages must show the access password gate instead.
+  const needsAccess = access.required && !access.loading && !access.granted;
+  // While /access is still loading, show a spinner so the create form does not
+  // flash before the gate replaces it.
+  const accessPending = access.required && access.loading;
+  const accessSpinner = (
+    <div
+      role="status"
+      aria-label={t('display.loading')}
+      className="flex justify-center py-16"
+    >
+      <SpinnerIcon className="animate-spin h-8 w-8 text-primary" />
+    </div>
+  );
   // With --require-auth-all, management pages are gated too.
   const needsLoginAll = REQUIRE_AUTH_ALL && needsLogin;
   // The login redirect lands on the home page, so the notice belongs there only.
@@ -89,7 +110,7 @@ export default function App() {
     </div>
   );
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col overflow-x-hidden">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       <button
         onClick={() => {
           const main = document.getElementById('main-content');
@@ -107,79 +128,97 @@ export default function App() {
         <main
           id="main-content"
           tabIndex={-1}
-          className="w-full max-w-3xl mx-auto mb-auto px-4 py-12 sm:py-16 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="fo-container mb-auto py-12 sm:py-16 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
+          {modeSwitchUsers > 0 && <ModeSwitch />}
           <div className="card bg-base-100 border border-base-300">
             <div className="card-body p-6 sm:p-10">
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      {loginAlert}
-                      {READ_ONLY ? (
-                        <ReadOnlyLanding />
-                      ) : needsLogin ? (
-                        <LoginRequired />
-                      ) : (
-                        <CreateSecret />
-                      )}
-                    </>
-                  }
-                />
-                {READ_ONLY ? (
-                  <Route path="/upload" element={<ReadOnlyLanding />} />
-                ) : needsLogin ? (
-                  <Route path="/upload" element={<LoginRequired />} />
-                ) : (
-                  !DISABLE_UPLOAD && (
-                    <Route path="/upload" element={<StreamingUpload />} />
-                  )
-                )}
-                {(SECRET_REQUESTS || SECRET_REQUESTS_DRAINING) && (
-                  <>
-                    {/* An expired license blocks new requests; a link to the
-                        form shows the list and its notice instead. */}
-                    <Route
-                      path="/request"
-                      element={
-                        needsLoginAll || (SECRET_REQUESTS && needsLogin) ? (
-                          <LoginRequired />
-                        ) : !SECRET_REQUESTS ? (
-                          <RequestList onReveal={reveal} />
-                        ) : (
-                          <CreateRequest />
-                        )
-                      }
-                    />
-                    <Route
-                      path="/requests"
-                      element={
-                        needsLoginAll ? (
-                          <LoginRequired />
-                        ) : (
-                          <RequestList onReveal={reveal} />
-                        )
-                      }
-                    />
-                    <Route path="/r/:key" element={<ProvideSecret />} />
-                    <Route path="/r/:key/:fp" element={<ProvideSecret />} />
-                  </>
-                )}
-                {READ_RECEIPTS && (
+              <ModeSwitchContext.Provider value={setModeSwitchUsers}>
+                <Routes>
                   <Route
-                    path="/receipts"
+                    path="/"
                     element={
-                      needsLoginAll ? <LoginRequired /> : <ReceiptList />
+                      <>
+                        {loginAlert}
+                        {READ_ONLY ? (
+                          <ReadOnlyLanding />
+                        ) : needsLogin ? (
+                          <LoginRequired />
+                        ) : accessPending ? (
+                          accessSpinner
+                        ) : needsAccess ? (
+                          <AccessGate />
+                        ) : (
+                          <CreateSecret />
+                        )}
+                      </>
                     }
                   />
-                )}
-                <Route
-                  path="/:format/:key/:password"
-                  element={<Prefetcher />}
-                />
-                <Route path="/:format/:key" element={<Prefetcher />} />
-              </Routes>
+                  {READ_ONLY ? (
+                    <Route path="/upload" element={<ReadOnlyLanding />} />
+                  ) : needsLogin ? (
+                    <Route path="/upload" element={<LoginRequired />} />
+                  ) : (
+                    !DISABLE_UPLOAD && (
+                      <Route
+                        path="/upload"
+                        element={
+                          accessPending ? (
+                            accessSpinner
+                          ) : needsAccess ? (
+                            <AccessGate />
+                          ) : (
+                            <StreamingUpload />
+                          )
+                        }
+                      />
+                    )
+                  )}
+                  {(SECRET_REQUESTS || SECRET_REQUESTS_DRAINING) && (
+                    <>
+                      {/* An expired license blocks new requests; a link to the
+                        form shows the list and its notice instead. */}
+                      <Route
+                        path="/request"
+                        element={
+                          needsLoginAll || (SECRET_REQUESTS && needsLogin) ? (
+                            <LoginRequired />
+                          ) : !SECRET_REQUESTS ? (
+                            <RequestList onReveal={reveal} />
+                          ) : (
+                            <CreateRequest />
+                          )
+                        }
+                      />
+                      <Route
+                        path="/requests"
+                        element={
+                          needsLoginAll ? (
+                            <LoginRequired />
+                          ) : (
+                            <RequestList onReveal={reveal} />
+                          )
+                        }
+                      />
+                      <Route path="/r/:key" element={<ProvideSecret />} />
+                      <Route path="/r/:key/:fp" element={<ProvideSecret />} />
+                    </>
+                  )}
+                  {READ_RECEIPTS && (
+                    <Route
+                      path="/receipts"
+                      element={
+                        needsLoginAll ? <LoginRequired /> : <ReceiptList />
+                      }
+                    />
+                  )}
+                  <Route
+                    path="/:format/:key/:password"
+                    element={<Prefetcher />}
+                  />
+                  <Route path="/:format/:key" element={<Prefetcher />} />
+                </Routes>
+              </ModeSwitchContext.Provider>
             </div>
           </div>
           <FeaturesSection />
@@ -201,52 +240,7 @@ export default function App() {
           />
         )}
       </HashRouter>
-      {/* Footer */}
-      <footer className="bg-base-100 border-t border-base-300">
-        <div className="max-w-5xl mx-auto px-4 py-8">
-          <div className="flex flex-col items-center text-center space-y-4">
-            <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
-              {PRIVACY_NOTICE_URL && PRIVACY_NOTICE_URL.trim() && (
-                <>
-                  <a
-                    href={PRIVACY_NOTICE_URL}
-                    className="text-base-content/70 hover:text-primary transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('footer.privacyNotice')}
-                  </a>
-                  <span className="text-base-content/40">•</span>
-                </>
-              )}
-              {IMPRINT_URL && IMPRINT_URL.trim() && (
-                <>
-                  <a
-                    href={IMPRINT_URL}
-                    className="text-base-content/70 hover:text-primary transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('footer.imprint')}
-                  </a>
-                  <span className="text-base-content/40">•</span>
-                </>
-              )}
-              <span className="text-base-content/70">
-                &copy; 2014&ndash;{new Date().getFullYear()}{' '}
-                <a
-                  href="https://yopass.se"
-                  className="text-primary hover:text-primary-focus font-medium transition-colors duration-200 underline decoration-dotted underline-offset-4 hover:decoration-solid"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Yopass
-                </a>
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <FilmOrbitFooter />
     </div>
   );
 }

@@ -31,16 +31,20 @@ test.describe('Secret Retrieval', () => {
     await page.goto(`/#/secret/${secretId}/test-password`);
 
     // Should show prefetch screen
-    await expect(page.locator('h2:has-text("Secure Message")')).toBeVisible();
     await expect(
-      page.locator("text=You've received a secure message"),
-    ).toBeVisible();
-    await expect(page.locator('text=Important')).toBeVisible();
-    await expect(
-      page.locator('text=This message will self-destruct'),
+      page.locator('h2:has-text("Sichere Nachricht")'),
     ).toBeVisible();
     await expect(
-      page.locator('button:has-text("Reveal Secure Message")'),
+      page.locator('text=Du hast eine sichere Nachricht erhalten'),
+    ).toBeVisible();
+    await expect(page.locator('text=Wichtig')).toBeVisible();
+    await expect(
+      page.locator(
+        'text=Diese Nachricht zerstört sich nach dem Anzeigen selbst',
+      ),
+    ).toBeVisible();
+    await expect(
+      page.locator('button:has-text("Sichere Nachricht anzeigen")'),
     ).toBeVisible();
   });
 
@@ -64,7 +68,7 @@ test.describe('Secret Retrieval', () => {
     // Should skip prefetch and go to decryption (with proper encrypted secret that would decrypt)
     // Since we can't easily mock OpenPGP decryption, we expect the decryption key input
     await expect(
-      page.locator('h2:has-text("Enter decryption key")'),
+      page.locator('h2:has-text("Entschlüsselungsschlüssel eingeben")'),
     ).toBeVisible();
   });
 
@@ -88,11 +92,11 @@ test.describe('Secret Retrieval', () => {
     await page.goto(`/#/secret/${secretId}/test-password`);
 
     // Click reveal button
-    await page.click('button:has-text("Reveal Secure Message")');
+    await page.click('button:has-text("Sichere Nachricht anzeigen")');
 
     // Should eventually show decryption screen (loading state may be too fast to catch)
     await expect(
-      page.locator('h2:has-text("Enter decryption key")'),
+      page.locator('h2:has-text("Entschlüsselungsschlüssel eingeben")'),
     ).toBeVisible();
   });
 
@@ -118,13 +122,13 @@ test.describe('Secret Retrieval', () => {
 
     // Should show decryption key form
     await expect(
-      page.locator('h2:has-text("Enter decryption key")'),
+      page.locator('h2:has-text("Entschlüsselungsschlüssel eingeben")'),
     ).toBeVisible();
     await expect(
-      page.locator('input[placeholder="Decryption key"]'),
+      page.locator('input[placeholder="Entschlüsselungsschlüssel"]'),
     ).toBeVisible();
     await expect(
-      page.locator('button:has-text("DECRYPT SECRET")'),
+      page.locator('button:has-text("GEHEIMNIS ENTSCHLÜSSELN")'),
     ).toBeVisible();
   });
 
@@ -136,7 +140,7 @@ test.describe('Secret Retrieval', () => {
 
     // Should show error page
     await expect(
-      page.locator('h2:has-text("Secret does not exist")'),
+      page.locator('h2:has-text("Geheimnis existiert nicht")'),
     ).toBeVisible();
   });
 
@@ -169,8 +173,10 @@ test.describe('Secret Retrieval', () => {
       );
       await mockAPI.mockGetSecret(secretId, { message });
       await page.goto(`/#/secret/${secretId}/wrong-key`);
-      const button = page.getByRole('button', { name: 'DECRYPT SECRET' });
-      const input = page.getByPlaceholder('Decryption key');
+      const button = page.getByRole('button', {
+        name: 'GEHEIMNIS ENTSCHLÜSSELN',
+      });
+      const input = page.getByPlaceholder('Entschlüsselungsschlüssel');
       await expect(page.getByRole('alert')).toBeVisible();
       if (!reducedMotion) {
         await expect(page.locator('html')).toHaveAttribute(
@@ -220,7 +226,7 @@ test.describe('Secret Retrieval', () => {
 
     // Should show error page
     await expect(
-      page.locator('h2:has-text("Secret does not exist")'),
+      page.locator('h2:has-text("Geheimnis existiert nicht")'),
     ).toBeVisible();
   });
 
@@ -239,7 +245,7 @@ test.describe('Secret Retrieval', () => {
 
     // Should show error page
     await expect(
-      page.locator('h2:has-text("Secret does not exist")'),
+      page.locator('h2:has-text("Geheimnis existiert nicht")'),
     ).toBeVisible();
   });
 
@@ -260,16 +266,19 @@ test.describe('Secret Retrieval', () => {
 
     // Should show decryption key form
     await expect(
-      page.locator('h2:has-text("Enter decryption key")'),
+      page.locator('h2:has-text("Entschlüsselungsschlüssel eingeben")'),
     ).toBeVisible();
     await expect(
-      page.locator('input[placeholder="Decryption key"]'),
+      page.locator('input[placeholder="Entschlüsselungsschlüssel"]'),
     ).toBeVisible();
 
     // Fill in a password and submit (testing the UI elements rather than loading state)
-    await page.fill('input[placeholder="Decryption key"]', 'some-password');
+    await page.fill(
+      'input[placeholder="Entschlüsselungsschlüssel"]',
+      'some-password',
+    );
     await expect(
-      page.locator('button:has-text("DECRYPT SECRET")'),
+      page.locator('button:has-text("GEHEIMNIS ENTSCHLÜSSELN")'),
     ).toBeVisible();
   });
 
@@ -328,17 +337,19 @@ test.describe('Secret Retrieval', () => {
     await page.goto(`/#/f/${fileId}/wrong-password`);
 
     // Should show prefetch screen for file
-    await expect(page.locator('h2:has-text("Secure Message")')).toBeVisible();
     await expect(
-      page.locator('button:has-text("Reveal Secure Message")'),
+      page.locator('h2:has-text("Sichere Nachricht")'),
+    ).toBeVisible();
+    await expect(
+      page.locator('button:has-text("Sichere Nachricht anzeigen")'),
     ).toBeVisible();
 
     // Click reveal
-    await page.click('button:has-text("Reveal Secure Message")');
+    await page.click('button:has-text("Sichere Nachricht anzeigen")');
 
     // Wrong password → decryption fails → wrong-key screen
     await expect(
-      page.locator('h2:has-text("Enter decryption key")'),
+      page.locator('h2:has-text("Entschlüsselungsschlüssel eingeben")'),
     ).toBeVisible();
   });
 
@@ -370,7 +381,7 @@ test.describe('Secret Retrieval', () => {
 
     // Should show error page
     await expect(
-      page.locator('h2:has-text("Secret does not exist")'),
+      page.locator('h2:has-text("Geheimnis existiert nicht")'),
     ).toBeVisible();
   });
 
@@ -411,7 +422,7 @@ test.describe('Secret Retrieval', () => {
 
     // Should show error page due to invalid response
     await expect(
-      page.locator('h2:has-text("Secret does not exist")'),
+      page.locator('h2:has-text("Geheimnis existiert nicht")'),
     ).toBeVisible();
   });
 });

@@ -103,25 +103,28 @@
     "timezone": "Die Zeiten gelten für deine lokale Zeitzone ({{timezone}})."
   },
   "features": {
-    "title": "Geheimnisse sicher und einfach teilen",
-    "subtitle": "Yopass wurde entwickelt, um die Menge an Klartext-Passwörtern in E-Mails und Chats zu reduzieren, indem es diese verschlüsselt und einen kurzlebigen Link erstellt, der nur einmal angesehen werden kann.",
-    "featureEndToEndTitle": "Ende-zu-Ende-Verschlüsselung",
-    "featureEndToEndText": "Verschlüsselung und Entschlüsselung erfolgen lokal im Browser. Der Schlüssel wird nie bei Yopass gespeichert.",
-    "featureSelfDestructionTitle": "Selbstzerstörung",
-    "featureSelfDestructionText": "Verschlüsselte Nachrichten haben eine feste Lebensdauer und werden nach Ablauf automatisch gelöscht.",
-    "featureOneTimeTitle": "Einmal-Downloads",
-    "featureOneTimeText": "Die verschlüsselte Nachricht kann nur einmal heruntergeladen werden, was das Risiko verringert, dass jemand deine Geheimnisse ausspäht.",
-    "featureSimpleSharingTitle": "Einfaches Teilen",
-    "featureSimpleSharingText": "Yopass erstellt einen eindeutigen Ein-Klick-Link für die verschlüsselte Datei oder Nachricht. Das Entschlüsselungspasswort kann alternativ separat gesendet werden.",
-    "featureNoAccountsTitle": "Keine Konten erforderlich",
-    "featureNoAccountsText": "Teilen soll schnell und einfach sein; außer dem verschlüsselten Geheimnis werden keine weiteren Informationen in der Datenbank gespeichert.",
-    "featureOpenSourceTitle": "Open-Source-Software",
-    "featureOpenSourceText": "Der Yopass-Verschlüsselungsmechanismus basiert auf Open-Source-Software, was volle Transparenz sowie die Möglichkeit zur Prüfung und Einreichung von Features bietet."
+    "title": "Zugangsdaten sicher an FilmOrbit schicken",
+    "subtitle": "So bleiben Passwörter und API-Schlüssel aus E-Mails und Chats heraus. In drei Schritten:",
+    "step1Title": "Eintragen",
+    "step1Text": "Trage deine Zugangsdaten ein. Sie werden direkt in deinem Browser verschlüsselt.",
+    "step2Title": "Link schicken",
+    "step2Text": "Schick den Link an FilmOrbit. Der Schlüssel steckt nur im Link, nicht auf unserem Server.",
+    "step3Title": "Wird gelöscht",
+    "step3Text": "Nach dem ersten Öffnen wird das Geheimnis gelöscht, spätestens nach Ablauf der gewählten Zeit.",
+    "faqTitle": "Häufige Fragen",
+    "faq1Question": "Wer kann meine Daten lesen?",
+    "faq1Answer": "Nur wer den vollständigen Link hat – also wir, wenn du ihn uns schickst. Auf dem Server liegen sie nur verschlüsselt.",
+    "faq2Question": "Was passiert nach Ablauf?",
+    "faq2Answer": "Nach Ablauf der gewählten Zeit wird das Geheimnis automatisch gelöscht. Danach funktioniert der Link nicht mehr.",
+    "faq3Question": "Was, wenn der Link verloren geht?",
+    "faq3Answer": "Erstelle einfach einen neuen. Der alte Link funktioniert weiter, bis er einmal geöffnet wurde oder die Zeit abläuft. Wenn er in falsche Hände geraten sein könnte, ändere die Zugangsdaten.",
+    "faq4Question": "Kann ich auch Dateien schicken?",
+    "faq4Answer": "Ja, bis 1 MB, zum Beispiel Schlüsseldateien oder Zertifikate. Gedacht ist FilmOrbit Safe aber vor allem für Text wie Passwörter und API-Schlüssel."
   },
   "header": {
     "buttonUpload": "Hochladen",
     "buttonText": "Text",
-    "appName": "Yopass",
+    "appName": "FilmOrbit Safe",
     "buttonRequests": "Anfragen",
     "requestsWithCount_one": "{{count}} Geheimnis wartet auf Abholung",
     "requestsWithCount_other": "{{count}} Geheimnisse warten auf Abholung",
@@ -145,6 +148,15 @@
     "loginRequiredTitle": "Anmeldung erforderlich",
     "loginRequiredDescription": "Du musst angemeldet sein, um Geheimnisse auf diesem Server zu erstellen.",
     "loginUnavailable": "Die Anmeldung ist derzeit nicht verfügbar, da die Serverlizenz abgelaufen ist. Bitte kontaktiere deinen Administrator."
+  },
+  "access": {
+    "title": "Zugang für Kundinnen und Kunden",
+    "description": "Diese Seite ist für Kundinnen und Kunden von FilmOrbit. Das Zugangspasswort bekommst du von uns.",
+    "passwordLabel": "Zugangspasswort",
+    "submit": "Weiter",
+    "invalid": "Das Passwort stimmt nicht. Bitte versuch es noch einmal.",
+    "rateLimited": "Zu viele Versuche. Bitte warte ein paar Minuten.",
+    "error": "Verbindung fehlgeschlagen. Bitte versuch es gleich noch einmal."
   },
   "accessibility": {
     "skipToContent": "Zum Hauptinhalt springen",
@@ -282,5 +294,22 @@
     "language": "Sprache",
     "theme": "Design",
     "darkModeToggle": "Dunkler Modus"
+  },
+  "filmorbit": {
+    "modeSwitchLabel": "Was möchtest du senden?",
+    "modeText": "Text",
+    "modeFile": "Datei",
+    "modeHint": "Text: Passwörter, API-Schlüssel, Zugangsdaten · Datei: z. B. Schlüsseldatei oder Zertifikat (max. {{size}})",
+    "modeHintNoSize": "Text: Passwörter, API-Schlüssel, Zugangsdaten · Datei: z. B. Schlüsseldatei oder Zertifikat",
+    "introText": "Trage hier die Zugangsdaten ein, die du uns schicken möchtest. Sie werden in deinem Browser verschlüsselt, bevor sie gesendet werden.",
+    "introFile": "Wähle die Datei aus, die du uns schicken möchtest, z. B. eine Schlüsseldatei oder ein Zertifikat. Sie wird in deinem Browser verschlüsselt, bevor sie hochgeladen wird.",
+    "helpExpiration": "Danach funktioniert der Link nicht mehr – auch wenn ihn noch niemand geöffnet hat.",
+    "helpOneTime": "An: Das Geheimnis wird nach dem ersten Öffnen sofort gelöscht. Aus: Es lässt sich bis zum Ablauf mehrmals öffnen.",
+    "helpGenerateKey": "An (am einfachsten): Der Schlüssel wird automatisch erzeugt und steckt im Link – du schickst nur einen Link. Aus: Du legst ein eigenes Passwort fest und schickst es getrennt vom Link über einen anderen Weg (z. B. Link per E-Mail, Passwort per Telefon oder SMS). Sicherer, aber mehr Aufwand.",
+    "helpCustomPassword": "Wir brauchen dieses Passwort zum Öffnen. Schick es nicht zusammen mit dem Link, sondern über einen anderen Weg, z. B. per Telefon oder SMS.",
+    "nextTitle": "Und jetzt?",
+    "nextOneClick": "Schick uns den Ein-Klick-Link, z. B. per E-Mail. Mehr ist nicht nötig – der Schlüssel steckt schon im Link.",
+    "nextSeparate": "Schick uns den Kurzlink und den Entschlüsselungsschlüssel getrennt über zwei verschiedene Wege, z. B. den Link per E-Mail und den Schlüssel per Telefon oder SMS.",
+    "nextCustomPassword": "Schick uns den Kurzlink, z. B. per E-Mail. Dein Passwort teilst du uns getrennt über einen anderen Weg mit, z. B. per Telefon oder SMS."
   }
 }

@@ -23,6 +23,18 @@ describe('parseConfig', () => {
     }
   });
 
+  it('only accepts a boolean for the access password requirement', () => {
+    expect(
+      parseConfig({ ACCESS_PASSWORD_REQUIRED: true }).ACCESS_PASSWORD_REQUIRED,
+    ).toBe(true);
+    for (const value of ['true', 1, null, undefined, false]) {
+      expect(
+        parseConfig({ ACCESS_PASSWORD_REQUIRED: value })
+          .ACCESS_PASSWORD_REQUIRED,
+      ).toBe(false);
+    }
+  });
+
   it('supplies defaults for older servers', () => {
     expect(parseConfig({})).toMatchObject(defaultConfig);
   });

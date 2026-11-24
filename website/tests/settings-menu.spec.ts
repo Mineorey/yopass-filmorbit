@@ -66,11 +66,11 @@ test.describe('Settings menu', () => {
       page.locator('h2:has-text("Kryptera meddelande")'),
     ).toBeVisible();
 
-    // The choice is persisted.
+    // FilmOrbit forces German: the choice is not kept across a reload.
     await page.reload();
     await page.waitForLoadState('networkidle');
     await expect(
-      page.locator('h2:has-text("Kryptera meddelande")'),
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
     ).toBeVisible();
   });
 

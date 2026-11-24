@@ -26,17 +26,17 @@ test.describe('Force Expiration', () => {
 
     // Verify radio buttons are not visible
     await expect(
-      page.locator('input[type="radio"][aria-label="One Hour"]'),
+      page.locator('input[type="radio"][aria-label="Eine Stunde"]'),
     ).not.toBeVisible();
     await expect(
-      page.locator('input[type="radio"][aria-label="One Day"]'),
+      page.locator('input[type="radio"][aria-label="Ein Tag"]'),
     ).not.toBeVisible();
     await expect(
-      page.locator('input[type="radio"][aria-label="One Week"]'),
+      page.locator('input[type="radio"][aria-label="Eine Woche"]'),
     ).not.toBeVisible();
 
     // Verify the forced expiration message is shown
-    await expect(page.locator('text=Secret will expire in')).toBeVisible();
+    await expect(page.locator('text=Geheimnis läuft in')).toBeVisible();
   });
 
   test('should show expiration radio buttons when FORCE_EXPIRATION is not set', async ({
@@ -49,13 +49,13 @@ test.describe('Force Expiration', () => {
 
     // Verify radio buttons are visible
     await expect(
-      page.locator('input[type="radio"][aria-label="One Hour"]'),
+      page.locator('input[type="radio"][aria-label="Eine Stunde"]'),
     ).toBeVisible();
     await expect(
-      page.locator('input[type="radio"][aria-label="One Day"]'),
+      page.locator('input[type="radio"][aria-label="Ein Tag"]'),
     ).toBeVisible();
     await expect(
-      page.locator('input[type="radio"][aria-label="One Week"]'),
+      page.locator('input[type="radio"][aria-label="Eine Woche"]'),
     ).toBeVisible();
   });
 
@@ -70,14 +70,14 @@ test.describe('Force Expiration', () => {
 
     // Fill in and submit secret
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     // Wait for redirect to result page
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Verify secret was created with the forced expiration value
@@ -102,20 +102,20 @@ test.describe('Force Expiration', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify the page loaded
-    await expect(page.locator('h2:has-text("Upload file")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Datei hochladen")')).toBeVisible();
 
     // Verify radio buttons are not visible
     await expect(
-      page.locator('input[type="radio"][aria-label="One Hour"]'),
+      page.locator('input[type="radio"][aria-label="Eine Stunde"]'),
     ).not.toBeVisible();
     await expect(
-      page.locator('input[type="radio"][aria-label="One Day"]'),
+      page.locator('input[type="radio"][aria-label="Ein Tag"]'),
     ).not.toBeVisible();
     await expect(
-      page.locator('input[type="radio"][aria-label="One Week"]'),
+      page.locator('input[type="radio"][aria-label="Eine Woche"]'),
     ).not.toBeVisible();
 
     // Verify the forced expiration message is shown
-    await expect(page.locator('text=Secret will expire in')).toBeVisible();
+    await expect(page.locator('text=Geheimnis läuft in')).toBeVisible();
   });
 });

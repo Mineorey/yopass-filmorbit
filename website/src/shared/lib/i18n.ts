@@ -30,7 +30,7 @@ import {
 // Use the language actually displayed: an unsupported browser language such as
 // ar-SA falls back to English and must not get an RTL layout.
 i18n.on('languageChanged', () => {
-  const language = i18n.resolvedLanguage || 'en';
+  const language = i18n.resolvedLanguage || 'de';
   document.documentElement.lang = language;
   document.documentElement.dir = i18n.dir(language);
 });
@@ -98,7 +98,9 @@ i18n
         translation: he,
       },
     },
-    fallbackLng: 'en',
+    // FilmOrbit: German only. lng overrides the detector.
+    lng: 'de',
+    fallbackLng: 'de',
     debug: false,
 
     interpolation: {

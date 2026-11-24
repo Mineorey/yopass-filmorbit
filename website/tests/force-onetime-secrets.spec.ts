@@ -28,27 +28,27 @@ test.describe('Force Onetime Secrets', () => {
 
     // Verify the one-time download checkbox is not visible
     await expect(
-      page.locator('label:has-text("One-time download")'),
+      page.locator('label:has-text("Einmaliger Download")'),
     ).not.toBeVisible();
 
     // Verify other form elements are still present
     await expect(
-      page.locator('textarea[placeholder="Enter your secret..."]'),
+      page.locator('textarea[placeholder="Gib dein Geheimnis ein..."]'),
     ).toBeVisible();
     await expect(
-      page.locator('label:has-text("Generate decryption key")'),
+      page.locator('label:has-text("Entschlüsselungsschlüssel generieren")'),
     ).toBeVisible();
 
     // Fill in and submit secret
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     // Wait for redirect to result page to ensure request completed
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Verify secret was created with one_time: true
@@ -73,13 +73,13 @@ test.describe('Force Onetime Secrets', () => {
 
     // Verify the one-time download checkbox is visible
     await expect(
-      page.locator('label:has-text("One-time download")'),
+      page.locator('label:has-text("Einmaliger Download")'),
     ).toBeVisible();
 
     // Verify checkbox is checked by default
     await expect(
       page.locator(
-        'label:has-text("One-time download") input[type="checkbox"]',
+        'label:has-text("Einmaliger Download") input[type="checkbox"]',
       ),
     ).toBeChecked();
   });
@@ -100,17 +100,17 @@ test.describe('Force Onetime Secrets', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify the page loaded correctly
-    await expect(page.locator('h2:has-text("Upload file")')).toBeVisible();
+    await expect(page.locator('h2:has-text("Datei hochladen")')).toBeVisible();
 
     // Verify the one-time download checkbox is not visible on upload page
     await expect(
-      page.locator('label:has-text("One-time download")'),
+      page.locator('label:has-text("Einmaliger Download")'),
     ).not.toBeVisible();
 
     // Verify other form elements are still present
     await expect(page.locator('input[type="file"]')).toBeAttached();
     await expect(
-      page.locator('label:has-text("Generate decryption key")'),
+      page.locator('label:has-text("Entschlüsselungsschlüssel generieren")'),
     ).toBeVisible();
   });
 
@@ -128,14 +128,14 @@ test.describe('Force Onetime Secrets', () => {
 
     // Fill in and submit secret
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     // Wait for redirect to result page to ensure request completed
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Verify secret was created with one_time: true regardless
@@ -162,19 +162,19 @@ test.describe('Force Onetime Secrets', () => {
 
     // Uncheck the one-time download checkbox
     await page.uncheck(
-      'label:has-text("One-time download") input[type="checkbox"]',
+      'label:has-text("Einmaliger Download") input[type="checkbox"]',
     );
 
     // Fill in and submit secret
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     // Wait for redirect to result page to ensure request completed
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Verify secret was created with one_time: false

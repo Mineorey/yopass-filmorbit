@@ -1,0 +1,57 @@
+# FilmOrbit Safe (safe.filmorbit.de) – eigener Compose-Stack neben Caddy.
+#
+# Standard: Variante A – Caddy läuft direkt auf dem Server (nicht in Docker).
+#   Yopass ist nur über 127.0.0.1:1337 erreichbar, Caddy leitet dorthin weiter.
+# Variante B – Caddy läuft selbst in Docker:
+#   zusätzlich docker-compose.caddy-network.yml verwenden (siehe README.md).
+#
+# Belegt keine Ports 80/443 – die gehören Caddy.
+
+name: filmorbit-safe
+
+services:
+  memcached:
+    image: memcached:1.6-alpine
+    restart: unless-stopped
+    # 64 MB Speicher reichen für Textgeheimnisse und Dateien bis 1 MB.
+    # -I 2m: Dateien werden verschlüsselt und base64-kodiert gespeichert und
+    # sind dadurch rund ein Drittel größer. Mit der Standardgrenze von 1 MB pro
+    # Eintrag scheitern Dateien ab etwa 750 KB.
+    command: ["memcached", "-m", "64", "-I", "2m"]
+    networks:
+      - safe
+
+  yopass:
+    image: ghcr.io/mineorey/yopass-filmorbit:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MEMCACHED: memcached:11211
+      # Startet nicht ohne Zugangspasswort (Schutz vor offenem Betrieb).
+      ACCESS_PASSWORD: ${ACCESS_PASSWORD:?ACCESS_PASSWORD in .env setzen}
+      PORT: "1337"
+    ports:
+      # Variante A: nur lokal erreichbar, nicht aus dem Internet.
+      - "127.0.0.1:1337:1337"
+    depends_on:
+      - memcached
+    networks:
+      - safe
+    healthcheck:
+      test: ["CMD", "/yopass-server", "--health-check"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  safe:
+    name: filmorbit-safe
+    # Festes Subnetz: Caddy auf dem Server (Variante A) erscheint im Container
+    # als Gateway dieses Netzes (z. B. 172.30.47.1), nicht als 127.0.0.1.
+    # TRUSTED_PROXIES in .env zeigt deshalb auf dieses Subnetz. Falls es auf dem
+    # Server schon belegt ist, hier und in .env ein anderes /24 eintragen.
+    ipam:
+      config:
+        - subnet: 172.30.47.0/24

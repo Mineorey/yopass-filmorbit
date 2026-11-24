@@ -6,69 +6,29 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe('language detection', () => {
-  it.each([
-    ['be-BY', 'be'],
-    ['da-DK', 'da'],
-    ['pt-BR', 'pt'],
-    ['pt-PT', 'pt'],
-    ['ro-RO', 'ro'],
-    ['tr-TR', 'tr'],
-    ['nb-NO', 'no'],
-    ['nb', 'no'],
-    ['nn-NO', 'no'],
-    ['no-NO', 'no'],
-    ['he-IL', 'he'],
-    ['iw-IL', 'he'],
-  ])('resolves browser locale %s to %s', async (browser, expected) => {
-    vi.spyOn(navigator, 'languages', 'get').mockReturnValue([browser]);
-    const { default: i18n } = await import('./i18n');
-    expect(i18n.resolvedLanguage).toBe(expected);
-    expect(i18n.t('upload.encrypting')).not.toBe('Encrypting & uploading...');
-  });
+describe('fixed German language', () => {
+  it.each(['en-US', 'sv-SE', 'he-IL', 'ar-SA'])(
+    'ignores the browser language %s',
+    async browser => {
+      vi.spyOn(navigator, 'languages', 'get').mockReturnValue([browser]);
+      const { default: i18n } = await import('./i18n');
+      expect(i18n.resolvedLanguage).toBe('de');
+      expect(document.documentElement.lang).toBe('de');
+      expect(document.documentElement.dir).toBe('ltr');
+    },
+  );
 
-  it.each([
-    ['he-IL', 'he', 'rtl'],
-    ['tr-TR', 'tr', 'ltr'],
-    ['ar-SA', 'en', 'ltr'],
-    ['zh-CN', 'en', 'ltr'],
-  ])('sets lang and dir on the document for %s', async (browser, lang, dir) => {
-    vi.spyOn(navigator, 'languages', 'get').mockReturnValue([browser]);
-    await import('./i18n');
-    expect(document.documentElement.lang).toBe(lang);
-    expect(document.documentElement.dir).toBe(dir);
-  });
-
-  it('prefers the first listed language over a later exact match', async () => {
-    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['sv-SE', 'en']);
+  it('ignores a language saved in localStorage', async () => {
+    localStorage.setItem('i18nextLng', 'en');
     const { default: i18n } = await import('./i18n');
-    expect(i18n.resolvedLanguage).toBe('sv');
-  });
-
-  it('ignores the static html lang attribute', async () => {
-    document.documentElement.lang = 'en';
-    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['sv-SE']);
-    const { default: i18n } = await import('./i18n');
-    expect(i18n.resolvedLanguage).toBe('sv');
-  });
-
-  it('uses English when the first browser language is unsupported', async () => {
-    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['ar-SA', 'he-IL']);
-    const { default: i18n } = await import('./i18n');
-    expect(i18n.resolvedLanguage).toBe('en');
-    expect(document.documentElement.dir).toBe('ltr');
-  });
-
-  it('preserves a saved Belarusian preference using the old code', async () => {
-    localStorage.setItem('i18nextLng', 'by');
-    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en-US']);
-    const { default: i18n } = await import('./i18n');
-    expect(i18n.resolvedLanguage).toBe('be');
+    expect(i18n.resolvedLanguage).toBe('de');
   });
 });
 
 describe('plural forms', () => {
   it.each([
+    ['de', 1, '1 Geheimnis wartet auf Abholung'],
+    ['de', 2, '2 Geheimnisse warten auf Abholung'],
     ['en', 1, '1 secret waiting to be collected'],
     ['en', 2, '2 secrets waiting to be collected'],
     ['ru', 1, '1 секрет ожидает получения'],

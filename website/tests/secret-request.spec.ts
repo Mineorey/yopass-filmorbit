@@ -162,9 +162,9 @@ test.describe('Secret Requests', () => {
   });
 
   for (const { value, label } of [
-    { value: 3600, label: 'one hour' },
-    { value: 86400, label: 'one day' },
-    { value: 604800, label: 'one week' },
+    { value: 3600, label: 'Eine Stunde' },
+    { value: 86400, label: 'Ein Tag' },
+    { value: 604800, label: 'Eine Woche' },
   ]) {
     test(`request uses forced expiration of ${label}`, async ({ page }) => {
       await mockAPI.mockConfigEndpoint({
@@ -175,17 +175,21 @@ test.describe('Secret Requests', () => {
       await page.goto('/#/request');
       await expect(page.getByRole('radio')).toHaveCount(0);
       await expect(
-        page.getByText(`Secret will expire in ${label}`, { exact: true }),
+        page.getByText(`Geheimnis läuft in ${label.toLowerCase()} ab`, {
+          exact: true,
+        }),
       ).toBeVisible();
       const submitted = page.waitForRequest(
         request =>
           request.method() === 'POST' &&
           new URL(request.url()).pathname === '/request',
       );
-      await page.getByRole('button', { name: 'Create request link' }).click();
+      await page
+        .getByRole('button', { name: 'Anfrage-Link erstellen' })
+        .click();
       expect((await submitted).postDataJSON().expiration).toBe(value);
       await expect(
-        page.getByRole('heading', { name: 'Request created' }),
+        page.getByRole('heading', { name: 'Anfrage erstellt' }),
       ).toBeVisible();
     });
   }
@@ -200,18 +204,18 @@ test.describe('Secret Requests', () => {
     await page.goto('/#/request');
     await expect(page.getByRole('radio')).toHaveCount(3);
     await expect(
-      page.getByRole('radio', { name: 'One Day', exact: true }),
+      page.getByRole('radio', { name: 'Ein Tag', exact: true }),
     ).toBeChecked();
-    await page.getByRole('radio', { name: 'One Week', exact: true }).check();
+    await page.getByRole('radio', { name: 'Eine Woche', exact: true }).check();
     const submitted = page.waitForRequest(
       request =>
         request.method() === 'POST' &&
         new URL(request.url()).pathname === '/request',
     );
-    await page.getByRole('button', { name: 'Create request link' }).click();
+    await page.getByRole('button', { name: 'Anfrage-Link erstellen' }).click();
     expect((await submitted).postDataJSON().expiration).toBe(604800);
     await expect(
-      page.getByRole('heading', { name: 'Request created' }),
+      page.getByRole('heading', { name: 'Anfrage erstellt' }),
     ).toBeVisible();
   });
 
@@ -222,18 +226,18 @@ test.describe('Secret Requests', () => {
       route.fulfill({ status: 200, json: {} }),
     );
     await page.goto('/#/request');
-    await page.getByRole('button', { name: 'Create request link' }).click();
+    await page.getByRole('button', { name: 'Anfrage-Link erstellen' }).click();
     await expect(
       page.getByText('HTTP 200: unexpected response body'),
     ).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'Request created' }),
+      page.getByRole('heading', { name: 'Anfrage erstellt' }),
     ).toHaveCount(0);
     expect(
       await page.evaluate(() => localStorage.getItem('yopass-secret-requests')),
     ).toBeNull();
     await expect(
-      page.getByRole('button', { name: 'Create request link' }),
+      page.getByRole('button', { name: 'Anfrage-Link erstellen' }),
     ).toBeEnabled();
   });
 
@@ -244,12 +248,12 @@ test.describe('Secret Requests', () => {
     await page.goto('/#/request');
     // The label field warns that labels are stored unencrypted
     await expect(
-      page.locator('text=The label is stored unencrypted'),
+      page.locator('text=Die Beschriftung wird unverschlüsselt gespeichert'),
     ).toBeVisible();
     await page.fill('#request-label', 'Staging DB password');
-    await page.click('button:has-text("Create request link")');
+    await page.click('button:has-text("Anfrage-Link erstellen")');
 
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
@@ -258,14 +262,16 @@ test.describe('Secret Requests', () => {
     // Responder opens the link and submits a secret (encrypted in browser)
     await page.goto(link!);
     await expect(
-      page.locator('h2:has-text("Someone requested a secret")'),
+      page.locator('h2:has-text("Jemand hat ein Geheimnis angefordert")'),
     ).toBeVisible();
     await expect(page.locator('text=Staging DB password')).toBeVisible();
     await page.fill('#provide-secret', 'hunter2-super-secret');
-    await page.click('button:has-text("Encrypt and send")');
-    await expect(page.locator('h2:has-text("Secret sent")')).toBeVisible({
-      timeout: 15000,
-    });
+    await page.click('button:has-text("Verschlüsseln und senden")');
+    await expect(page.locator('h2:has-text("Geheimnis gesendet")')).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
 
     // The ciphertext stored on the "server" must be PGP encrypted
     const stored = [...store.values()][0];
@@ -275,39 +281,43 @@ test.describe('Secret Requests', () => {
 
     // Requester sees the fulfilled state and decrypts the secret locally
     await page.goto('/#/requests');
-    await expect(page.locator('text=Secret provided')).toBeVisible();
-    await page.click('button:has-text("View secret")');
+    await expect(page.locator('text=Geheimnis übermittelt')).toBeVisible();
+    await page.click('button:has-text("Geheimnis anzeigen")');
     await expect(
-      page.locator('h3:has-text("View the secret now?")'),
+      page.locator('h3:has-text("Geheimnis jetzt anzeigen?")'),
     ).toBeVisible();
-    await page.click('button:has-text("View now")');
-    await expect(page.locator('h3:has-text("Secret received")')).toBeVisible({
+    await page.click('button:has-text("Jetzt anzeigen")');
+    await expect(
+      page.locator('h3:has-text("Geheimnis empfangen")'),
+    ).toBeVisible({
       timeout: 15000,
     });
     await expect(page.locator('pre')).toHaveText('hunter2-super-secret');
 
     // The request was deleted from the server and is marked as collected
     expect(store.size).toBe(0);
-    await page.click('button:has-text("Close")');
-    await expect(page.locator('.badge:has-text("Collected")')).toBeVisible();
+    await page.click('button:has-text("Schließen")');
+    await expect(page.locator('.badge:has-text("Abgeholt")')).toBeVisible();
   });
 
   test('opening a link again after providing shows it was already provided', async ({
     page,
   }) => {
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
+    await page.click('button:has-text("Anfrage-Link erstellen")');
     const link = await page.locator('code').textContent({ timeout: 15000 });
     await page.goto(link!);
     await page.fill('#provide-secret', 'first answer');
-    await page.click('button:has-text("Encrypt and send")');
-    await expect(page.locator('h2:has-text("Secret sent")')).toBeVisible({
-      timeout: 15000,
-    });
+    await page.click('button:has-text("Verschlüsseln und senden")');
+    await expect(page.locator('h2:has-text("Geheimnis gesendet")')).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
 
     await page.reload();
     await expect(
-      page.locator('h2:has-text("Secret already provided")'),
+      page.locator('h2:has-text("Geheimnis bereits übermittelt")'),
     ).toBeVisible();
     await expect(page.locator('#provide-secret')).toHaveCount(0);
   });
@@ -319,11 +329,11 @@ test.describe('Secret Requests', () => {
     });
     await page.goto('/#/request');
     await expect(
-      page.getByText('Not encrypted: anyone with the request link'),
+      page.getByText('Nicht verschlüsselt: Alle mit dem Anfrage-Link'),
     ).toBeVisible();
     // The limit counts characters (code points) like the server. Going over
     // keeps the text, marks the field invalid and blocks submit.
-    const submit = page.locator('button:has-text("Create request link")');
+    const submit = page.locator('button:has-text("Anfrage-Link erstellen")');
     await page.fill('#request-note', '😀'.repeat(20));
     await expect(page.getByTestId('request-note-count')).toHaveText('20/20');
     await expect(submit).toBeEnabled();
@@ -342,14 +352,14 @@ test.describe('Secret Requests', () => {
     await expect(submit).toBeEnabled();
     await page.fill('#request-note', 'Read-only creds');
     await expect(page.getByText('15/20')).toBeVisible();
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     expect([...store.values()][0].note).toBe('Read-only creds');
 
     await page.goto((await page.locator('code').textContent())!);
-    await expect(page.getByText('Note from the requester')).toBeVisible();
+    await expect(page.getByText('Notiz der anfragenden Person')).toBeVisible();
     await expect(page.getByText('Read-only creds')).toBeVisible();
   });
 
@@ -367,8 +377,8 @@ test.describe('Secret Requests', () => {
     // Requester creates a request
     await page.goto('/#/request');
     await page.fill('#request-label', 'TLS certificate');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
@@ -376,19 +386,21 @@ test.describe('Secret Requests', () => {
     // Responder opens the link, switches to the file tab and uploads a file
     await page.goto(link!);
     await expect(
-      page.locator('h2:has-text("Someone requested a secret")'),
+      page.locator('h2:has-text("Jemand hat ein Geheimnis angefordert")'),
     ).toBeVisible();
-    await page.click('[role="tab"]:has-text("File")');
+    await page.click('[role="tab"]:has-text("Datei")');
     await page.setInputFiles('#provide-file-input', {
       name: 'server.pem',
       mimeType: 'application/x-pem-file',
       buffer: Buffer.from(fileContent),
     });
     await expect(page.locator('text=server.pem')).toBeVisible();
-    await page.click('button:has-text("Encrypt and send")');
-    await expect(page.locator('h2:has-text("Secret sent")')).toBeVisible({
-      timeout: 15000,
-    });
+    await page.click('button:has-text("Verschlüsseln und senden")');
+    await expect(page.locator('h2:has-text("Geheimnis gesendet")')).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
 
     // The stored ciphertext is PGP encrypted and marked as a file; the
     // filename travels inside the ciphertext, not in server-visible metadata
@@ -401,13 +413,15 @@ test.describe('Secret Requests', () => {
 
     // Requester decrypts locally and downloads the file
     await page.goto('/#/requests');
-    await expect(page.locator('text=Secret provided')).toBeVisible();
-    await page.click('button:has-text("View secret")');
+    await expect(page.locator('text=Geheimnis übermittelt')).toBeVisible();
+    await page.click('button:has-text("Geheimnis anzeigen")');
     await expect(
-      page.locator('h3:has-text("View the secret now?")'),
+      page.locator('h3:has-text("Geheimnis jetzt anzeigen?")'),
     ).toBeVisible();
-    await page.click('button:has-text("View now")');
-    await expect(page.locator('h3:has-text("Secret received")')).toBeVisible({
+    await page.click('button:has-text("Jetzt anzeigen")');
+    await expect(
+      page.locator('h3:has-text("Geheimnis empfangen")'),
+    ).toBeVisible({
       timeout: 15000,
     });
     await expect(
@@ -415,7 +429,7 @@ test.describe('Secret Requests', () => {
     ).toBeVisible();
 
     const downloadPromise = page.waitForEvent('download');
-    await page.click('button:has-text("Download file")');
+    await page.click('button:has-text("Datei herunterladen")');
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe('server.pem');
     const downloadPath = test.info().outputPath('downloaded-server.pem');
@@ -425,8 +439,8 @@ test.describe('Secret Requests', () => {
 
     // Consumed on retrieval, same as text secrets
     expect(store.size).toBe(0);
-    await page.click('button:has-text("Close")');
-    await expect(page.locator('.badge:has-text("Collected")')).toBeVisible();
+    await page.click('button:has-text("Schließen")');
+    await expect(page.locator('.badge:has-text("Abgeholt")')).toBeVisible();
   });
 
   test('a file too large for the configured limit is rejected locally', async ({
@@ -437,24 +451,24 @@ test.describe('Secret Requests', () => {
       MAX_REQUEST_FILE_SIZE: '1KB',
     });
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
 
     await page.goto(link!);
-    await page.click('[role="tab"]:has-text("File")');
+    await page.click('[role="tab"]:has-text("Datei")');
     await page.setInputFiles('#provide-file-input', {
       name: 'too-big.bin',
       mimeType: 'application/octet-stream',
       buffer: Buffer.alloc(2048, 1),
     });
     await expect(
-      page.locator('text=File exceeds the maximum allowed size'),
+      page.locator('text=Die Datei überschreitet die maximal zulässige Größe'),
     ).toBeVisible();
     await expect(
-      page.locator('button:has-text("Encrypt and send")'),
+      page.locator('button:has-text("Verschlüsseln und senden")'),
     ).toBeDisabled();
   });
 
@@ -464,15 +478,15 @@ test.describe('Secret Requests', () => {
       DISABLE_UPLOAD: true,
     });
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
 
     await page.goto(link!);
     await expect(
-      page.locator('h2:has-text("Someone requested a secret")'),
+      page.locator('h2:has-text("Jemand hat ein Geheimnis angefordert")'),
     ).toBeVisible();
     await expect(page.locator('[role="tab"]')).toHaveCount(0);
     await expect(page.locator('#provide-secret')).toBeVisible();
@@ -480,22 +494,22 @@ test.describe('Secret Requests', () => {
 
   test('pending request can be revoked from the list', async ({ page }) => {
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
 
     await page.goto('/#/requests');
-    await expect(page.locator('text=Awaiting secret')).toBeVisible();
+    await expect(page.locator('text=Wartet auf Geheimnis')).toBeVisible();
 
-    await page.click('button[aria-label="More actions"]');
-    await page.click('button:has-text("Revoke")');
+    await page.click('button[aria-label="Weitere Aktionen"]');
+    await page.click('button:has-text("Widerrufen")');
     await expect(
-      page.locator('h3:has-text("Revoke this request?")'),
+      page.locator('h3:has-text("Diese Anfrage widerrufen?")'),
     ).toBeVisible();
-    await page.click('button:has-text("Revoke request")');
+    await page.click('button:has-text("Anfrage widerrufen")');
 
-    await expect(page.locator('.badge:has-text("Revoked")')).toBeVisible();
+    await expect(page.locator('.badge:has-text("Widerrufen")')).toBeVisible();
     expect(store.size).toBe(0);
   });
 
@@ -511,37 +525,37 @@ test.describe('Secret Requests', () => {
     await page.route('**/auth/me', route => route.fulfill({ status: 401 }));
     await page.goto('/#/request');
     await expect(
-      page.getByText('Share secrets securely with ease'),
+      page.getByText('Zugangsdaten sicher an FilmOrbit schicken'),
     ).toBeVisible();
     // Present elsewhere, so the absence checks below are meaningful.
-    for (const href of ['#/requests', '#/upload', '#/receipts']) {
+    for (const href of ['#/requests', '#/receipts']) {
       await expect(page.locator(`header a[href="${href}"]`)).toBeVisible();
     }
     await expect(page.locator('header a[href$="/auth/login"]')).toBeVisible();
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
 
     await page.goto((await page.locator('code').textContent())!);
     await expect(
-      page.locator('h2:has-text("Someone requested a secret")'),
+      page.locator('h2:has-text("Jemand hat ein Geheimnis angefordert")'),
     ).toBeVisible();
     const header = page.locator('header');
     await expect(header.locator('a[href="/"]')).toBeVisible();
     await expect(
-      header.getByRole('button', { name: 'Settings' }),
+      header.getByRole('button', { name: 'Einstellungen' }),
     ).toBeVisible();
     await expect(header.locator('a[href="#/requests"]')).toHaveCount(0);
     await expect(header.locator('a[href="#/upload"]')).toHaveCount(0);
     await expect(header.locator('a[href="#/receipts"]')).toHaveCount(0);
     await expect(header.locator('a[href$="/auth/login"]')).toHaveCount(0);
     await expect(
-      page.getByText('Share secrets securely with ease'),
+      page.getByText('Zugangsdaten sicher an FilmOrbit schicken'),
     ).toHaveCount(0);
 
     // The language can still be changed from the minimal header.
-    await header.getByRole('button', { name: 'Settings' }).click();
+    await header.getByRole('button', { name: 'Einstellungen' }).click();
     await page.selectOption('#settings-language', 'sv');
     await expect(
       page.locator('h2:has-text("Någon har begärt ett meddelande")'),
@@ -551,7 +565,7 @@ test.describe('Secret Requests', () => {
   test('opening a revoked or expired link shows an error', async ({ page }) => {
     await page.goto('/#/r/doesNotExist12345678ab/abcdef0123456789');
     await expect(
-      page.locator('h2:has-text("Request not available")'),
+      page.locator('h2:has-text("Anfrage nicht verfügbar")'),
     ).toBeVisible();
   });
 
@@ -559,8 +573,8 @@ test.describe('Secret Requests', () => {
     page,
   }) => {
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
@@ -571,7 +585,7 @@ test.describe('Secret Requests', () => {
     const tamperedLink = link!.replace(/\/[0-9a-f]{16}$/, '/0123456789abcdef');
     await page.goto(tamperedLink);
     await expect(
-      page.locator('h2:has-text("Key verification failed")'),
+      page.locator('h2:has-text("Schlüsselverifizierung fehlgeschlagen")'),
     ).toBeVisible();
   });
 
@@ -579,8 +593,8 @@ test.describe('Secret Requests', () => {
     page,
   }) => {
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
@@ -589,7 +603,7 @@ test.describe('Secret Requests', () => {
     // public key against, so the form must not be offered.
     await page.goto(link!.replace(/\/[0-9a-f]{16}$/, ''));
     await expect(
-      page.locator('h2:has-text("Key verification failed")'),
+      page.locator('h2:has-text("Schlüsselverifizierung fehlgeschlagen")'),
     ).toBeVisible();
   });
 
@@ -608,10 +622,10 @@ test.describe('Secret Requests', () => {
       SECRET_REQUESTS_DRAINING: true,
     });
     await page.goto('/?login_error=license_expired');
-    await expect(page.getByRole('alert')).toContainText('Sign-in');
+    await expect(page.getByRole('alert')).toContainText('Anmeldung');
     await page.locator('a[href="#/requests"]').click();
     await expect(page.getByRole('alert')).toHaveCount(1);
-    await expect(page.getByRole('alert')).toContainText('New secret requests');
+    await expect(page.getByRole('alert')).toContainText('Neue Secret-Anfragen');
   });
 
   test('an expired license warns on the list and blocks new requests', async ({
@@ -624,11 +638,11 @@ test.describe('Secret Requests', () => {
     for (const route of ['/#/requests', '/#/request']) {
       await page.goto(route);
       await expect(page.getByRole('alert')).toContainText(
-        'server license has expired',
+        'Serverlizenz abgelaufen',
       );
-      await expect(page.getByRole('link', { name: 'New request' })).toHaveCount(
-        0,
-      );
+      await expect(
+        page.getByRole('link', { name: 'Neue Anfrage' }),
+      ).toHaveCount(0);
       await expect(page.locator('#request-label')).toHaveCount(0);
     }
   });
@@ -638,8 +652,8 @@ test.describe('Secret Requests', () => {
   }) => {
     // Create and fulfill a request
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
@@ -652,10 +666,12 @@ test.describe('Secret Requests', () => {
 
     await page.goto(link!);
     await page.fill('#provide-secret', 'badge-test-secret');
-    await page.click('button:has-text("Encrypt and send")');
-    await expect(page.locator('h2:has-text("Secret sent")')).toBeVisible({
-      timeout: 15000,
-    });
+    await page.click('button:has-text("Verschlüsseln und senden")');
+    await expect(page.locator('h2:has-text("Geheimnis gesendet")')).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
 
     // Badge shows one waiting secret
     await page.goto('/');
@@ -665,15 +681,17 @@ test.describe('Secret Requests', () => {
 
     // Collecting the secret clears the badge
     await page.goto('/#/requests');
-    await page.click('button:has-text("View secret")');
+    await page.click('button:has-text("Geheimnis anzeigen")');
     await expect(
-      page.locator('h3:has-text("View the secret now?")'),
+      page.locator('h3:has-text("Geheimnis jetzt anzeigen?")'),
     ).toBeVisible();
-    await page.click('button:has-text("View now")');
-    await expect(page.locator('h3:has-text("Secret received")')).toBeVisible({
+    await page.click('button:has-text("Jetzt anzeigen")');
+    await expect(
+      page.locator('h3:has-text("Geheimnis empfangen")'),
+    ).toBeVisible({
       timeout: 15000,
     });
-    await page.click('button:has-text("Close")');
+    await page.click('button:has-text("Schließen")');
     await expect(
       page.locator('[data-testid="requests-badge"]'),
     ).not.toBeVisible();
@@ -682,51 +700,57 @@ test.describe('Secret Requests', () => {
   test('collected requests can be cleared from the list', async ({ page }) => {
     // Create, fulfill, and collect a request
     await page.goto('/#/request');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
     const link = await page.locator('code').textContent();
     await page.goto(link!);
     await page.fill('#provide-secret', 'clear-me');
-    await page.click('button:has-text("Encrypt and send")');
-    await expect(page.locator('h2:has-text("Secret sent")')).toBeVisible({
-      timeout: 15000,
-    });
+    await page.click('button:has-text("Verschlüsseln und senden")');
+    await expect(page.locator('h2:has-text("Geheimnis gesendet")')).toBeVisible(
+      {
+        timeout: 15000,
+      },
+    );
     await page.goto('/#/requests');
-    await page.click('button:has-text("View secret")');
+    await page.click('button:has-text("Geheimnis anzeigen")');
     await expect(
-      page.locator('h3:has-text("View the secret now?")'),
+      page.locator('h3:has-text("Geheimnis jetzt anzeigen?")'),
     ).toBeVisible();
-    await page.click('button:has-text("View now")');
-    await expect(page.locator('h3:has-text("Secret received")')).toBeVisible({
+    await page.click('button:has-text("Jetzt anzeigen")');
+    await expect(
+      page.locator('h3:has-text("Geheimnis empfangen")'),
+    ).toBeVisible({
       timeout: 15000,
     });
-    await page.click('button:has-text("Close")');
-    await expect(page.locator('.badge:has-text("Collected")')).toBeVisible();
+    await page.click('button:has-text("Schließen")');
+    await expect(page.locator('.badge:has-text("Abgeholt")')).toBeVisible();
 
     // Clear collected entries
-    await page.click('button:has-text("Clear collected (1)")');
+    await page.click('button:has-text("Abgeholte löschen (1)")');
     await expect(
-      page.locator('h3:has-text("Clear collected requests?")'),
+      page.locator('h3:has-text("Abgeholte Anfragen löschen?")'),
     ).toBeVisible();
-    await page.click('.modal button:has-text("Clear collected")');
-    await expect(page.locator('text=No secret requests yet')).toBeVisible();
+    await page.click('.modal button:has-text("Abgeholte löschen")');
+    await expect(
+      page.locator('text=Noch keine Geheimnis-Anfragen'),
+    ).toBeVisible();
   });
 
   test('exported request can be imported from a file', async ({ page }) => {
     // Create a request and export it to a file
     await page.goto('/#/request');
     await page.fill('#request-label', 'Imported via file');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
 
     await page.goto('/#/requests');
-    await page.click('button[aria-label="More actions"]');
+    await page.click('button[aria-label="Weitere Aktionen"]');
     const downloadPromise = page.waitForEvent('download');
-    await page.click('button:has-text("Export")');
+    await page.click('button:has-text("Exportieren")');
     const download = await downloadPromise;
     const exportPath = test.info().outputPath('request-export.json');
     await download.saveAs(exportPath);
@@ -734,14 +758,16 @@ test.describe('Secret Requests', () => {
     // Simulate another browser by wiping the local store
     await page.evaluate(() => localStorage.clear());
     await page.reload();
-    await expect(page.locator('text=No secret requests yet')).toBeVisible();
+    await expect(
+      page.locator('text=Noch keine Geheimnis-Anfragen'),
+    ).toBeVisible();
 
     // Import the exported file through the file picker
-    await page.click('button:has-text("Import")');
+    await page.click('button:has-text("Importieren")');
     await page.setInputFiles('#request-import-file-input', exportPath);
     await expect(page.locator('text=Imported via file')).toBeVisible();
     await expect(
-      page.locator('.badge:has-text("Awaiting secret")'),
+      page.locator('.badge:has-text("Wartet auf Geheimnis")'),
     ).toBeVisible();
   });
 
@@ -750,8 +776,8 @@ test.describe('Secret Requests', () => {
   }) => {
     await page.goto('/#/request');
     await page.fill('#request-label', 'Imported via drop');
-    await page.click('button:has-text("Create request link")');
-    await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
+    await page.click('button:has-text("Anfrage-Link erstellen")');
+    await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible({
       timeout: 15000,
     });
 
@@ -765,10 +791,12 @@ test.describe('Secret Requests', () => {
     });
     await page.evaluate(() => localStorage.clear());
     await page.reload();
-    await expect(page.locator('text=No secret requests yet')).toBeVisible();
+    await expect(
+      page.locator('text=Noch keine Geheimnis-Anfragen'),
+    ).toBeVisible();
 
     // Drop the export as a file onto the import dropzone
-    await page.click('button:has-text("Import")');
+    await page.click('button:has-text("Importieren")');
     await page.evaluate(json => {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(
@@ -783,20 +811,20 @@ test.describe('Secret Requests', () => {
     }, exported);
     await expect(page.locator('text=Imported via drop')).toBeVisible();
     await expect(
-      page.locator('.badge:has-text("Awaiting secret")'),
+      page.locator('.badge:has-text("Wartet auf Geheimnis")'),
     ).toBeVisible();
   });
 
   test('importing an invalid file shows an error', async ({ page }) => {
     await page.goto('/#/requests');
-    await page.click('button:has-text("Import")');
+    await page.click('button:has-text("Importieren")');
     await page.setInputFiles('#request-import-file-input', {
       name: 'not-a-request.json',
       mimeType: 'application/json',
       buffer: Buffer.from('{"foo": "bar"}'),
     });
     await expect(
-      page.locator("text=That doesn't look like a valid request export."),
+      page.locator('text=Das sieht nicht wie ein gültiger Anfrage-Export aus.'),
     ).toBeVisible();
   });
 
@@ -807,31 +835,35 @@ test.describe('Secret Requests', () => {
     for (let i = 0; i < 2; i++) {
       await page.goto('/#/requests');
       await page.goto('/#/request');
-      await page.click('button:has-text("Create request link")');
-      await expect(page.locator('h2:has-text("Request created")')).toBeVisible({
-        timeout: 15000,
-      });
+      await page.click('button:has-text("Anfrage-Link erstellen")');
+      await expect(page.locator('h2:has-text("Anfrage erstellt")')).toBeVisible(
+        {
+          timeout: 15000,
+        },
+      );
     }
     await page.goto('/#/requests');
     await expect(
-      page.locator('.badge:has-text("Awaiting secret")'),
+      page.locator('.badge:has-text("Wartet auf Geheimnis")'),
     ).toHaveCount(2);
     expect(store.size).toBe(2);
 
-    await page.click('button:has-text("Purge all")');
+    await page.click('button:has-text("Alle bereinigen")');
     await expect(
-      page.locator('h3:has-text("Purge all requests?")'),
+      page.locator('h3:has-text("Alle Anfragen bereinigen?")'),
     ).toBeVisible();
-    await page.click('button:has-text("Purge everything")');
+    await page.click('button:has-text("Alles bereinigen")');
 
     // Server-side requests were revoked and the local list is empty
-    await expect(page.locator('text=No secret requests yet')).toBeVisible();
+    await expect(
+      page.locator('text=Noch keine Geheimnis-Anfragen'),
+    ).toBeVisible();
     expect(store.size).toBe(0);
 
     // The old links no longer work
     await page.goto('/#/r/e2eRequestId000000001/abcdef0123456789');
     await expect(
-      page.locator('h2:has-text("Request not available")'),
+      page.locator('h2:has-text("Anfrage nicht verfügbar")'),
     ).toBeVisible();
   });
 });

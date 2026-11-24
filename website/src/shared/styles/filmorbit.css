@@ -1,0 +1,116 @@
+/* FilmOrbit Safe: corporate design of filmorbit.de as the fork's own DaisyUI
+   theme. Fonts are self-hosted via @fontsource (no Google Fonts request). Kept
+   in a separate file so upstream changes to index.css merge cleanly. */
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/500.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/dm-sans/700.css';
+@import '@fontsource/staatliches/400.css';
+
+@plugin "daisyui/theme" {
+  name: 'filmorbit';
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+  --color-primary: #49adc3;
+  --color-primary-content: #050d0f;
+  --color-secondary: #b03350;
+  --color-secondary-content: #ffffff;
+  --color-accent: #28183b;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1c2426;
+  --color-neutral-content: #f8f8f8;
+  --color-base-100: #ffffff;
+  --color-base-200: #f8f8f8;
+  --color-base-300: #e2e3e3;
+  --color-base-content: #1c2426;
+  --color-info: #49adc3;
+  --color-info-content: #050d0f;
+  --color-success: #2e9d6b;
+  --color-success-content: #ffffff;
+  --color-warning: #e0a526;
+  --color-warning-content: #050d0f;
+  --color-error: #b03350;
+  --color-error-content: #ffffff;
+  /* filmorbit.de: cards --radius-l (20px), fields --radius-m (12px),
+     small controls --radius-s (8px); buttons are pills (see below). */
+  --radius-selector: 0.5rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme {
+  --font-sans:
+    'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-display: 'Staatliches', 'DM Sans', ui-sans-serif, sans-serif;
+}
+
+/* Scoped to the theme so the selectors outrank index.css's base rules. */
+[data-theme='filmorbit'] :is(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+/* filmorbit.de buttons are fully rounded pills. */
+[data-theme='filmorbit'] .btn:not(.btn-square, .btn-circle) {
+  border-radius: 9999px;
+}
+
+/* filmorbit.de --shadow-card. */
+[data-theme='filmorbit'] .card {
+  box-shadow: 0 8px 24px rgba(5, 13, 15, 0.08);
+}
+
+/* Dark primary text on #49ADC3 reads too heavy for links on white; links use
+   the darker brand blue (--blue-d-1) instead. */
+[data-theme='filmorbit'] .link-primary,
+[data-theme='filmorbit'] .text-primary {
+  color: #317382;
+}
+
+/* Page background: the hero gradient of filmorbit.de. It sits on a fixed
+   layer behind everything instead of `background-attachment: fixed`, which
+   mobile Safari ignores; 100lvh keeps it covering the large viewport while
+   the browser toolbars collapse. The solid colour underneath shows on
+   overscroll and while the layer paints. Cards keep their white background. */
+:root:root {
+  --root-bg: #28183b;
+  background-color: #28183b;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 100vh;
+  height: 100lvh;
+  background: linear-gradient(150deg, #b03350, #28183b);
+  pointer-events: none;
+}
+
+/* One shared width for the navbar pill, the main content and the footer, so
+   their left and right edges line up: 64rem plus a 0.75rem gutter on phones
+   and 1.25rem from the sm breakpoint on. */
+.fo-container {
+  --fo-gutter: 0.75rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(64rem + 2 * var(--fo-gutter));
+  margin-inline: auto;
+  padding-inline: var(--fo-gutter);
+}
+
+@media (min-width: 40rem) {
+  .fo-container {
+    --fo-gutter: 1.25rem;
+  }
+}

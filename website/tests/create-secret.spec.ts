@@ -20,11 +20,13 @@ test.describe('Create Secret', () => {
     page,
   }) => {
     // Check page title
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
 
     // Check form fields are present
     await expect(
-      page.locator('textarea[placeholder="Enter your secret..."]'),
+      page.locator('textarea[placeholder="Gib dein Geheimnis ein..."]'),
     ).toBeVisible();
 
     // Check default expiration is selected (One Hour)
@@ -33,23 +35,23 @@ test.describe('Create Secret', () => {
     // Check default checkboxes state
     await expect(
       page.locator(
-        'label:has-text("One-time download") input[type="checkbox"]',
+        'label:has-text("Einmaliger Download") input[type="checkbox"]',
       ),
     ).toBeChecked();
     await expect(
       page.locator(
-        'label:has-text("Generate decryption key") input[type="checkbox"]',
+        'label:has-text("Entschlüsselungsschlüssel generieren") input[type="checkbox"]',
       ),
     ).toBeChecked();
 
     // Check custom password field is not visible by default
     await expect(
-      page.locator('input[placeholder="Enter your password..."]'),
+      page.locator('input[placeholder="Gib dein Passwort ein..."]'),
     ).not.toBeVisible();
 
     // Check submit button
     await expect(page.locator('button[type="submit"]')).toContainText(
-      'Encrypt Message',
+      'Nachricht verschlüsseln',
     );
   });
 
@@ -58,7 +60,7 @@ test.describe('Create Secret', () => {
 
     // Fill in the secret
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
 
@@ -67,7 +69,7 @@ test.describe('Create Secret', () => {
 
     // Should redirect to result page
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Validate the JSON payload sent to the API
@@ -102,23 +104,23 @@ test.describe('Create Secret', () => {
 
     // Fill in the secret
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
 
     // Uncheck generate key to enable custom password
     await page.uncheck(
-      'label:has-text("Generate decryption key") input[type="checkbox"]',
+      'label:has-text("Entschlüsselungsschlüssel generieren") input[type="checkbox"]',
     );
 
     // Check that custom password field is now visible
     await expect(
-      page.locator('input[placeholder="Enter your password..."]'),
+      page.locator('input[placeholder="Gib dein Passwort ein..."]'),
     ).toBeVisible();
 
     // Enter custom password
     await page.fill(
-      'input[placeholder="Enter your password..."]',
+      'input[placeholder="Gib dein Passwort ein..."]',
       customPassword,
     );
 
@@ -127,27 +129,27 @@ test.describe('Create Secret', () => {
 
     // Should redirect to result page
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // With custom password, should NOT show one-click link
     await expect(
       page.locator('button[title="Copy one-click link"]'),
     ).not.toBeVisible();
-    await expect(page.locator('text=One-click link')).not.toBeVisible();
+    await expect(page.locator('text=Ein-Klick-Link')).not.toBeVisible();
 
     // Should show short link
     await expect(page.locator('button[title="Copy short link"]')).toBeVisible();
     await expect(
-      page.locator('div:has-text("Short link")').first(),
+      page.locator('div:has-text("Kurzlink")').first(),
     ).toBeVisible();
 
     // Should show the custom password in the decryption key section
     await expect(
-      page.locator('div:has-text("Decryption key")').first(),
+      page.locator('div:has-text("Entschlüsselungsschlüssel")').first(),
     ).toBeVisible();
     const passwordCode = page
-      .locator('div:has-text("Decryption key")')
+      .locator('div:has-text("Entschlüsselungsschlüssel")')
       .locator('..')
       .locator('code')
       .last();
@@ -167,14 +169,14 @@ test.describe('Create Secret', () => {
 
     // Test One Day expiration (86400 seconds)
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.check('input[value="86400"]');
     await page.click('button[type="submit"]');
 
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Validate One Day expiration payload
@@ -185,14 +187,14 @@ test.describe('Create Secret', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.check('input[value="604800"]');
     await page.click('button[type="submit"]');
 
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Validate One Week expiration payload
@@ -208,17 +210,17 @@ test.describe('Create Secret', () => {
 
     // Uncheck one-time download
     await page.uncheck(
-      'label:has-text("One-time download") input[type="checkbox"]',
+      'label:has-text("Einmaliger Download") input[type="checkbox"]',
     );
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Validate one-time setting is false in payload
@@ -234,7 +236,7 @@ test.describe('Create Secret', () => {
     await mockAPI.mockCreateSecret({ message: 'Server error' }, 500);
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
@@ -243,7 +245,9 @@ test.describe('Create Secret', () => {
     await expect(page.locator('[role="alert"]')).toContainText('Server error');
 
     // Should stay on the form page
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
   });
 
   test('should require secret text to submit', async ({ page }) => {
@@ -251,21 +255,23 @@ test.describe('Create Secret', () => {
     await page.click('button[type="submit"]');
 
     // Should stay on form (no redirect to result)
-    await expect(page.locator('h2:has-text("Encrypt message")')).toBeVisible();
+    await expect(
+      page.locator('h2:has-text("Nachricht verschlüsseln")'),
+    ).toBeVisible();
   });
 
   test('should copy URL to clipboard on result page', async ({ page }) => {
     await mockAPI.mockCreateSecret(mockResponses.secretCreated);
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     // Should be on result page
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Click copy button for one-click link
@@ -282,7 +288,7 @@ test.describe('Create Secret', () => {
     await mockAPI.mockCreateSecret(mockResponses.secretCreated);
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
@@ -308,7 +314,7 @@ test.describe('Create Secret', () => {
     });
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
@@ -330,7 +336,7 @@ test.describe('Create Secret', () => {
 
     // Set up non-default values
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
 
@@ -339,15 +345,15 @@ test.describe('Create Secret', () => {
 
     // Disable one-time download
     await page.uncheck(
-      'label:has-text("One-time download") input[type="checkbox"]',
+      'label:has-text("Einmaliger Download") input[type="checkbox"]',
     );
 
     // Use custom password
     await page.uncheck(
-      'label:has-text("Generate decryption key") input[type="checkbox"]',
+      'label:has-text("Entschlüsselungsschlüssel generieren") input[type="checkbox"]',
     );
     await page.fill(
-      'input[placeholder="Enter your password..."]',
+      'input[placeholder="Gib dein Passwort ein..."]',
       customPassword,
     );
 
@@ -356,7 +362,7 @@ test.describe('Create Secret', () => {
 
     // Should redirect to result page
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Validate complete payload structure
@@ -391,7 +397,7 @@ test.describe('Create Secret', () => {
 
     // Should display the custom password
     const passwordCode = page
-      .locator('div:has-text("Decryption key")')
+      .locator('div:has-text("Entschlüsselungsschlüssel")')
       .locator('..')
       .locator('code')
       .last();
@@ -405,14 +411,14 @@ test.describe('Create Secret', () => {
     await mockAPI.mockCreateSecret(mockResponses.secretCreated);
 
     await page.fill(
-      'textarea[placeholder="Enter your secret..."]',
+      'textarea[placeholder="Gib dein Geheimnis ein..."]',
       testSecrets.simple.message,
     );
     await page.click('button[type="submit"]');
 
     // Should be on result page
     await expect(
-      page.locator('h2:has-text("Secret stored securely")'),
+      page.locator('h2:has-text("Geheimnis sicher gespeichert")'),
     ).toBeVisible();
 
     // Test one-click link button
@@ -435,7 +441,7 @@ test.describe('Create Secret', () => {
 
     // The button HTML should change (text "Copied" should appear)
     const clickedHTML = await oneClickButton.innerHTML();
-    expect(clickedHTML).toContain('Copied');
+    expect(clickedHTML).toContain('Kopiert');
     expect(clickedHTML).not.toBe(initialHTML);
 
     // Wait for feedback to disappear (1500ms timeout)
@@ -443,6 +449,6 @@ test.describe('Create Secret', () => {
 
     // After timeout, should revert to initial state
     const finalHTML = await oneClickButton.innerHTML();
-    expect(finalHTML).not.toContain('Copied');
+    expect(finalHTML).not.toContain('Kopiert');
   });
 });
